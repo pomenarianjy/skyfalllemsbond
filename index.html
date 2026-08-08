@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lems Bond Skyfall</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 480px;
+            max-height: 720px;
+            background: #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* UI Overlay screens */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 10;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s, background 0.2s;
+            margin-top: 15px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Selection Screen Styles */
+        .selection-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 10px;
+        }
+
+        .version-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #f1c40f;
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .version-card:active {
+            background: rgba(241, 196, 15, 0.3);
+            transform: scale(0.98);
+        }
+
+        .version-card img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .version-info {
+            text-align: right;
+        }
+
+        .version-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .version-desc {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        .start-img {
+            max-width: 60%;
+            max-height: 200px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="320" height="480"></canvas>
+
+        <!-- Start Screen Overlay -->
+        <div id="start-screen" class="overlay">
+            <h1>Lems Bond Skyfall</h1>
+            <img src="birdstart.png" alt="Start Bird" class="start-img" id="img-start-screen" onerror="this.style.display='none'">
+            <button class="btn" id="btn-start-proceed">Start Game!</button>
+        </div>
+
+        <!-- Selection Screen Overlay -->
+        <div id="select-screen" class="overlay hidden">
+            <h1>Choose Theme</h1>
+            <div class="selection-container">
+                <div class="version-card" onclick="selectVersion(1)">
+                    <img src="bird1.png" alt="Banker" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><circle cx=\'20\' cy=\'20\' r=\'18\' fill=\'gold\'/></svg>'">
+                    <div class="version-info">
+                        <div class="version-title">The Banker's</div>
+                        <div class="version-desc">Coins & Wealth</div>
+                    </div>
+                </div>
+
+                <div class="version-card" onclick="selectVersion(2)">
+                    <img src="bird2.png" alt="Paris" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><circle cx=\'20\' cy=\'20\' r=\'18\' fill=\'pink\'/></svg>'">
+                    <div class="version-info">
+                        <div class="version-title">Paris</div>
+                        <div class="version-desc">Macarons & Romance</div>
+                    </div>
+                </div>
+
+                <div class="version-card" onclick="selectVersion(3)">
+                    <img src="bird3.png" alt="Hong Kong" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><circle cx=\'20\' cy=\'20\' r=\'18\' fill=\'red\'/></svg>'">
+                    <div class="version-info">
+                        <div class="version-title">Hong Kong</div>
+                        <div class="version-desc">Dragons & Clouds</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Assets Loader
+        const assets = {
+            birdStart: new Image(),
+            birdGameOver: new Image(),
+            birds: [new Image(), new Image(), new Image()],
+            backgrounds: [new Image(), new Image(), new Image()],
+            bottomPipes: [new Image(), new Image(), new Image()],
+            topPipes: [new Image(), new Image(), new Image()]
+        };
+
+        // File sources mapping
+        assets.birdStart.src = 'birdstart.png';
+        assets.birdGameOver.src = 'birdgameover.png';
+        assets.birds[0].src = 'bird1.png';
+        assets.birds[1].src = 'bird2.png';
+        assets.birds[2].src = 'bird3.png';
+
+        assets.backgrounds[0].src = 'background1.png';
+        assets.backgrounds[1].src = 'background2.png';
+        assets.backgrounds[2].src = 'background3.png';
+
+        // Version 1: coin/coin | Version 2: macaron/macaron | Version 3: dragon/cloud
+        assets.bottomPipes[0].src = 'coin.png';
+        assets.topPipes[0].src = 'coin.png';
+
+        assets.bottomPipes[1].src = 'macaron.png';
+        assets.topPipes[1].src = 'macaron.png';
+
+        assets.bottomPipes[2].src = 'dragon.png';
+        assets.topPipes[2].src = 'cloud.png';
+
+        // Game Configuration & State Variables
+        const STATES = { START: 0, SELECT: 1, PLAYING: 2, GAMEOVER: 3 };
+        let currentState = STATES.START;
+        let selectedVersion = 0; // 0: Banker, 1: Paris, 2: HK
+
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('lemsbond_high_score')) || 0;
+
+        // Physics constants
+        const gravity = 0.25;
+        const jumpStrength = -5.2;
+        const basePipeWidth = 54;
+        const groundY = 430;
+
+        // Dynamic difficulty variables
+        let pipeSpeed = 2.0;
+        let pipeGap = 105;
+
+        // Entities
+        const bird = {
+            x: 50,
+            y: 240,
+            width: 34,
+            height: 34,
+            velocityY: 0
+        };
+
+        let pipes = [];
+        let spawnTimer = 0;
+
+        // UI DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const selectScreen = document.getElementById('select-screen');
+        const btnStartProceed = document.getElementById('btn-start-proceed');
+
+        // Start Proceed Click
+        btnStartProceed.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startScreen.classList.add('hidden');
+            selectScreen.classList.remove('hidden');
+            currentState = STATES.SELECT;
+        });
+
+        function selectVersion(v) {
+            selectedVersion = v - 1; // 0, 1, or 2
+            selectScreen.classList.add('hidden');
+            resetGame();
+            currentState = STATES.PLAYING;
+        }
+
+        function resetGame() {
+            bird.y = 240;
+            bird.velocityY = 0;
+            pipes = [];
+            score = 0;
+            pipeSpeed = 2.0;
+            pipeGap = 105;
+            spawnTimer = 0;
+        }
+
+        function handleInput() {
+            if (currentState === STATES.PLAYING) {
+                bird.velocityY = jumpStrength;
+            } else if (currentState === STATES.GAMEOVER) {
+                // Return to 3 selection page upon clicking
+                currentState = STATES.SELECT;
+                selectScreen.classList.remove('hidden');
+            }
+        }
+
+        // Event Listeners for controls (Mouse & Touch)
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                handleInput();
+            }
+        });
+
+        canvas.addEventListener('mousedown', handleInput);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleInput();
+        }, { passive: false });
+
+        // Pipe Management
+        function spawnPipe() {
+            // Difficulty scaling every 10 pipes
+            const levelMultiplier = Math.floor(score / 10);
+            pipeSpeed = 2.0 + (levelMultiplier * 0.35);
+            pipeGap = Math.max(68, 105 - (levelMultiplier * 4));
+
+            const minPipeHeight = 40;
+            const maxPipeHeight = groundY - pipeGap - minPipeHeight;
+            const topHeight = Math.floor(Math.random() * (maxPipeHeight - minPipeHeight + 1)) + minPipeHeight;
+
+            pipes.push({
+                x: canvas.width,
+                topHeight: topHeight,
+                bottomY: topHeight + pipeGap,
+                passed: false
+            });
+        }
+
+        // Collision Check Helper
+        function checkCollision(b, pipe) {
+            // Check top boundary or ground collision
+            if (b.y <= 0 || b.y + b.height >= groundY) return true;
+
+            // Pipe horizontal bounds
+            const pipeLeft = pipe.x;
+            const pipeRight = pipe.x + basePipeWidth;
+            const birdRight = b.x + b.width;
+            const birdLeft = b.x;
+
+            if (birdRight > pipeLeft && birdLeft < pipeRight) {
+                // Pipe vertical bounds
+                if (b.y < pipe.topHeight || (b.y + b.height) > pipe.bottomY) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Helper to draw images safely with color fallbacks
+        function drawImageOrFallback(img, x, y, w, h, fallbackColor, flipY = false) {
+            ctx.save();
+            if (flipY) {
+                ctx.translate(x + w / 2, y + h / 2);
+                ctx.scale(1, -1);
+                ctx.translate(-(x + w / 2), -(y + h / 2));
+            }
+
+            if (img.complete && img.naturalWidth !== 0) {
+                ctx.drawImage(img, x, y, w, h);
+            } else {
+                ctx.fillStyle = fallbackColor;
+                ctx.fillRect(x, y, w, h);
+            }
+            ctx.restore();
+        }
+
+        // Main Game Loop
+        function gameLoop() {
+            // Clear Frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Render Background
+            if (currentState === STATES.PLAYING || currentState === STATES.GAMEOVER) {
+                drawImageOrFallback(assets.backgrounds[selectedVersion], 0, 0, canvas.width, canvas.height, '#70c5ce');
+            } else {
+                ctx.fillStyle = '#2c3e50';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // 2. Logic Update & Rendering based on State
+            if (currentState === STATES.PLAYING) {
+                // Physics Update
+                bird.velocityY += gravity;
+                bird.y += bird.velocityY;
+
+                // Pipe Logic
+                spawnTimer++;
+                const spawnInterval = Math.max(70, Math.floor(160 / pipeSpeed));
+                if (spawnTimer >= spawnInterval) {
+                    spawnPipe();
+                    spawnTimer = 0;
+                }
+
+                for (let i = pipes.length - 1; i >= 0; i--) {
+                    let p = pipes[i];
+                    p.x -= pipeSpeed;
+
+                    // Pass Check
+                    if (!p.passed && p.x + basePipeWidth < bird.x) {
+                        p.passed = true;
+                        score++;
+                        if (score > highScore) {
+                            highScore = score;
+                            localStorage.setItem('lemsbond_high_score', highScore);
+                        }
+                    }
+
+                    // Collision Check
+                    if (checkCollision(bird, p)) {
+                        currentState = STATES.GAMEOVER;
+                    }
+
+                    // Clean off-screen pipes
+                    if (p.x + basePipeWidth < 0) {
+                        pipes.splice(i, 1);
+                    }
+                }
+
+                // Ground Collision
+                if (bird.y + bird.height >= groundY) {
+                    currentState = STATES.GAMEOVER;
+                }
+            }
+
+            // Draw Pipes (If Playing or Game Over)
+            if (currentState === STATES.PLAYING || currentState === STATES.GAMEOVER) {
+                const topImg = assets.topPipes[selectedVersion];
+                const botImg = assets.bottomPipes[selectedVersion];
+
+                pipes.forEach(p => {
+                    // Top Pipe (Flipped)
+                    drawImageOrFallback(topImg, p.x, 0, basePipeWidth, p.topHeight, '#2ecc71', true);
+                    // Bottom Pipe
+                    drawImageOrFallback(botImg, p.x, p.bottomY, basePipeWidth, groundY - p.bottomY, '#2ecc71', false);
+                });
+
+                // Draw Ground
+                ctx.fillStyle = '#d35400';
+                ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+
+                // Draw Bird
+                drawImageOrFallback(assets.birds[selectedVersion], bird.x, bird.y, bird.width, bird.height, '#f1c40f');
+            }
+
+            // Draw Top UI (Always display persistent High Score and Current Score during game)
+            if (currentState === STATES.PLAYING || currentState === STATES.GAMEOVER) {
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#000000';
+                ctx.shadowBlur = 4;
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(`HIGH: ${highScore}`, canvas.width - 12, 24);
+
+                ctx.font = 'bold 22px sans-serif';
+                ctx.fillText(`${score}`, canvas.width - 12, 50);
+                ctx.shadowBlur = 0;
+            }
+
+            // Game Over Screen Overlay Elements
+            if (currentState === STATES.GAMEOVER) {
+                // Game Over Image Overlay
+                const goImgWidth = 180;
+                const goImgHeight = 80;
+                drawImageOrFallback(
+                    assets.birdGameOver, 
+                    (canvas.width - goImgWidth) / 2, 
+                    120, 
+                    goImgWidth, 
+                    goImgHeight, 
+                    'rgba(0,0,0,0)'
+                );
+
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#000000';
+                ctx.shadowBlur = 6;
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 24px sans-serif';
+                ctx.fillText(`Final Score: ${score}`, canvas.width / 2, 360);
+
+                ctx.font = '14px sans-serif';
+                ctx.fillText('Click anywhere to try again', canvas.width / 2, 390);
+                ctx.shadowBlur = 0;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start Game Loop
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
