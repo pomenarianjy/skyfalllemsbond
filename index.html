@@ -58,7 +58,7 @@
             justify-content: space-between;
             align-items: center;
             z-index: 10;
-            padding: 28px 20px;
+            padding: 24px 20px;
             text-align: center;
         }
 
@@ -75,9 +75,11 @@
             font-size: 2.2rem;
             color: #ffffff;
             letter-spacing: -0.5px;
-            text-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+            text-shadow: 0 4px 14px rgba(0, 0, 0, 0.8);
             margin-top: 5px;
             font-weight: 800;
+            position: relative;
+            z-index: 2;
         }
 
         .btn {
@@ -89,24 +91,30 @@
             font-weight: 800;
             border-radius: 9999px;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(255, 126, 95, 0.45);
+            box-shadow: 0 8px 24px rgba(255, 126, 95, 0.5);
             transition: transform 0.15s ease;
             margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
         }
 
         .btn:active {
             transform: scale(0.95);
         }
 
-        /* Start Screen Bird Image */
+        /* Start Screen Image - Scaled to max screen height without crop/distortion */
         .start-img {
-            max-width: 200px;
-            max-height: 180px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 92%;
             width: auto;
-            height: auto;
+            max-width: 95%;
             object-fit: contain;
-            margin: auto;
-            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.6));
+            z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.7));
         }
 
         /* Horizontal Theme Cards */
@@ -119,6 +127,8 @@
             width: 90%;
             max-width: 760px;
             margin: auto 0;
+            position: relative;
+            z-index: 2;
         }
 
         .version-card {
@@ -174,15 +184,19 @@
             background: #000;
         }
 
+        /* Game Over Image - Scaled to max screen height without crop/distortion */
         .gameover-bg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 92%;
+            width: auto;
+            max-width: 95%;
+            object-fit: contain;
             z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.7));
         }
 
         .gameover-content {
@@ -194,13 +208,13 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            padding-bottom: 45px;
-            background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%);
+            padding-bottom: 25px;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%);
         }
 
         .score-box {
             background: rgba(255, 255, 255, 0.95);
-            padding: 18px 42px;
+            padding: 16px 38px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -209,14 +223,14 @@
         }
 
         .score-box h2 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #0f172a;
             margin-bottom: 2px;
             font-weight: 800;
         }
 
         .score-box p {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #16a34a;
             font-weight: 700;
         }
@@ -319,7 +333,6 @@
                 const mask = new Uint8Array(w * h);
 
                 for (let i = 0; i < w * h; i++) {
-                    // Strictly discern visible pixels (alpha threshold > 50)
                     mask[i] = imgData[i * 4 + 3] > 50 ? 1 : 0;
                 }
                 return { mask, width: w, height: h };
@@ -361,13 +374,13 @@
         let score = 0;
         let highScore = parseInt(localStorage.getItem('lemsbond_high_score')) || 0;
 
-        // Tuned Easy Physics for Horizontal Layout
+        // Tuned Physics for Horizontal Layout
         const gravity = 0.26;
         const jumpStrength = -5.6;
         const basePipeWidth = 72;
 
         let pipeSpeed = 2.2;
-        let pipeGap = 175; // Generous vertical opening
+        let pipeGap = 175;
 
         const bird = {
             x: 120,
@@ -378,11 +391,10 @@
             rotation: 0
         };
 
-        // Enlarge Bird Dimensions significantly
         function updateBirdBounds() {
             const img = assets.birds[selectedVersion];
             if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-                const maxDim = 68; // Larger bird size
+                const maxDim = 68;
                 if (img.naturalWidth >= img.naturalHeight) {
                     bird.width = maxDim;
                     bird.height = maxDim * (img.naturalHeight / img.naturalWidth);
@@ -471,7 +483,6 @@
             });
         }
 
-        // Precise Alpha Pixel Collision (Eliminating invisible box hits)
         function checkCollision(b, pipe) {
             updateBirdBounds();
             const maskData = assets.birdMasks[selectedVersion];
@@ -482,7 +493,6 @@
             const topPipeBottom = pipe.topHeight;
             const bottomPipeTop = pipe.bottomY;
 
-            // Strict visual bounding box check with 2px inset padding
             const pad = 2;
             const bLeft = b.x + pad;
             const bRight = b.x + b.width - pad;
@@ -498,7 +508,6 @@
                 return false;
             }
 
-            // High-precision pixel sampling
             const { mask, width: imgW, height: imgH } = maskData;
             const cx = b.x + b.width / 2;
             const cy = b.y + b.height / 2;
@@ -530,7 +539,6 @@
             return false;
         }
 
-        // Tight Pipe Image Stacking with zero gaps/seams
         function drawStackedObstacle(img, x, startY, totalHeight, isTopPipe) {
             if (!img.complete || img.naturalWidth === 0) {
                 ctx.fillStyle = '#22c55e';
@@ -547,7 +555,6 @@
             ctx.rect(x, startY, basePipeWidth, totalHeight);
             ctx.clip();
 
-            // Stack images tightly with 1px overlap to prevent subpixel render gaps
             if (isTopPipe) {
                 let currY = startY + totalHeight;
                 while (currY > startY - itemHeight) {
