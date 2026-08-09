@@ -13,7 +13,6 @@
             -webkit-user-select: none;
             touch-action: manipulation;
         }
-
         html, body {
             width: 100%;
             height: 100%;
@@ -24,7 +23,6 @@
             justify-content: center;
             align-items: center;
         }
-
         /* Horizontal Widescreen Game Viewport (16:9 Ratio) */
         #game-container {
             position: relative;
@@ -37,7 +35,6 @@
             background: #000;
             box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
         }
-
         canvas {
             display: block;
             width: 100%;
@@ -45,7 +42,6 @@
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
         }
-
         /* Top Overlay Canvas for Front-Layer Flying Bird */
         #topCanvas {
             position: absolute;
@@ -56,7 +52,6 @@
             pointer-events: none;
             z-index: 100;
         }
-
         /* Overlays Base Style */
         .overlay {
             position: absolute;
@@ -69,56 +64,49 @@
             justify-content: space-between;
             align-items: center;
             z-index: 10;
-            padding: 24px 20px;
+            padding: 16px 14px;
             text-align: center;
         }
-
         /* Start Screen Background */
         #start-screen {
             background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.65)), url('background1.png') center/cover no-repeat;
         }
-
         /* Translucent Selection Screen */
         #select-screen {
             background: linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.55));
             backdrop-filter: blur(2px);
         }
-
         .hidden {
             display: none !important;
         }
-
         h1 {
-            font-size: 2.4rem;
+            font-size: clamp(1.4rem, 4.5vw, 2.4rem);
             color: #ffffff;
             letter-spacing: -0.5px;
             text-shadow: 0 4px 18px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255,255,255,0.3);
-            margin-top: 5px;
+            margin-top: 2px;
             font-weight: 800;
             position: relative;
             z-index: 2;
         }
-
         .btn {
             background: linear-gradient(135deg, #ff7e5f, #feb47b);
             border: none;
             color: white;
-            padding: 14px 42px;
-            font-size: 1.25rem;
+            padding: 12px 36px;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
             font-weight: 800;
             border-radius: 9999px;
             cursor: pointer;
             box-shadow: 0 8px 24px rgba(255, 126, 95, 0.5);
             transition: transform 0.15s ease, box-shadow 0.15s ease;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             position: relative;
             z-index: 2;
         }
-
         .btn:active {
             transform: scale(0.95);
         }
-
         /* Start Screen Image */
         .start-img {
             position: absolute;
@@ -133,105 +121,117 @@
             pointer-events: none;
             filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.7));
         }
-
         /* High Score Badge */
         .top-right-score-badge {
             position: absolute;
-            top: 18px;
-            right: 24px;
+            top: 12px;
+            right: 16px;
             background: rgba(15, 23, 42, 0.85);
             border: 1.5px solid rgba(255, 255, 255, 0.35);
-            padding: 8px 20px;
+            padding: 6px 14px;
             border-radius: 9999px;
             color: #ffffff;
-            font-size: 1rem;
+            font-size: clamp(0.75rem, 1.8vw, 1rem);
             font-weight: 800;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
             z-index: 10;
             backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
-
         .top-right-score-badge span {
             color: #22c55e;
-            font-size: 1.25rem;
+            font-size: clamp(0.85rem, 2.2vw, 1.25rem);
             text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
         }
-
-        /* Selection Cards */
+        /* Selection Cards Optimized for Mobile & Widescreen */
         .selection-container {
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: center;
-            gap: 26px;
-            width: 94%;
+            gap: clamp(8px, 2vw, 24px);
+            width: 96%;
             max-width: 880px;
             margin: auto 0;
             position: relative;
             z-index: 2;
         }
-
         .version-card {
             flex: 1;
             background: rgba(255, 255, 255, 0.92);
             border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 24px;
-            padding: 22px 14px;
+            border-radius: 16px;
+            padding: clamp(8px, 2vh, 18px) clamp(6px, 1.5vw, 12px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 14px;
+            gap: clamp(4px, 1vh, 10px);
             cursor: pointer;
-            box-shadow: 0 16px 36px rgba(0,0,0,0.5), inset 0 0 12px rgba(255,255,255,0.6);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.6);
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease, box-shadow 0.2s ease;
         }
-
         .version-card:hover {
-            transform: translateY(-6px) scale(1.03);
+            transform: translateY(-4px) scale(1.02);
             background: #ffffff;
-            box-shadow: 0 22px 42px rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.8);
+            box-shadow: 0 18px 36px rgba(0,0,0,0.6), 0 0 18px rgba(255,255,255,0.8);
         }
-
         .version-card:active {
             transform: scale(0.96);
         }
-
         .version-card img {
-            width: 130px;
-            height: 130px;
+            width: clamp(42px, 12vw, 110px);
+            height: clamp(42px, 12vw, 110px);
             object-fit: contain;
-            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
             transition: transform 0.2s ease;
         }
-
         .version-card:hover img {
-            transform: scale(1.08);
+            transform: scale(1.06);
         }
-
         .card-text-group {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
             align-items: center;
         }
-
         .version-title {
             font-weight: 800;
-            font-size: 1.25rem;
+            font-size: clamp(0.75rem, 2vw, 1.15rem);
             color: #0f172a;
             letter-spacing: -0.3px;
+            text-align: center;
+            white-space: nowrap;
         }
-
         .version-desc {
-            font-size: 0.85rem;
+            font-size: clamp(0.6rem, 1.4vw, 0.8rem);
             color: #475569;
             font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
         }
-
+        /* Mobile Specific Overrides */
+        @media (max-width: 600px) or (max-height: 480px) {
+            .overlay {
+                padding: 10px 8px;
+            }
+            .selection-container {
+                gap: 6px;
+                width: 98%;
+            }
+            .version-card {
+                padding: 6px 4px;
+                border-radius: 12px;
+                border-width: 1.5px;
+            }
+            .top-right-score-badge {
+                top: 8px;
+                right: 10px;
+                padding: 4px 10px;
+            }
+        }
         /* Game Over Overlay */
         #gameover-screen {
             padding: 0;
@@ -239,7 +239,6 @@
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(2px);
         }
-
         .gameover-bg {
             position: absolute;
             top: 50%;
@@ -253,7 +252,6 @@
             pointer-events: none;
             filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.8));
         }
-
         .gameover-content {
             position: relative;
             z-index: 2;
@@ -266,48 +264,41 @@
             padding-bottom: 28px;
             background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.8) 100%);
         }
-
         .score-box {
             background: rgba(255, 255, 255, 0.95);
-            padding: 18px 42px;
-            border-radius: 22px;
+            padding: 16px 36px;
+            border-radius: 20px;
             box-shadow: 0 16px 40px rgba(0,0,0,0.6);
             border: 2px solid rgba(255, 255, 255, 0.6);
             text-align: center;
             cursor: pointer;
             transition: transform 0.15s ease;
         }
-
         .score-box:active {
             transform: scale(0.96);
         }
-
         .score-box h2 {
-            font-size: 2rem;
+            font-size: clamp(1.4rem, 3.5vw, 2rem);
             color: #0f172a;
             margin-bottom: 2px;
             font-weight: 800;
         }
-
         .score-box p {
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2vw, 1rem);
             color: #16a34a;
             font-weight: 800;
         }
     </style>
 </head>
 <body>
-
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
-
         <!-- Start Screen -->
         <div id="start-screen" class="overlay">
             <h1>Lems Bond Skyfall</h1>
             <img src="birdstart.png" alt="Start Bird" class="start-img" id="img-start-screen" onerror="this.style.display='none'">
             <button class="btn" id="btn-start-proceed">Tap to Play</button>
         </div>
-
         <!-- Theme Selection Screen -->
         <div id="select-screen" class="overlay hidden">
             <div class="top-right-score-badge">BEST: <span id="txt-select-best">0</span></div>
@@ -320,7 +311,6 @@
                         <div class="version-desc">Coins & Wealth</div>
                     </div>
                 </div>
-
                 <div class="version-card" onclick="selectVersion(1)">
                     <img src="bird2.png" alt="Paris" onerror="this.style.display='none'">
                     <div class="card-text-group">
@@ -328,7 +318,6 @@
                         <div class="version-desc">Macarons & Romance</div>
                     </div>
                 </div>
-
                 <div class="version-card" onclick="selectVersion(2)">
                     <img src="bird3.png" alt="Hong Kong" onerror="this.style.display='none'">
                     <div class="card-text-group">
@@ -338,7 +327,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Game Over Screen -->
         <div id="gameover-screen" class="overlay hidden">
             <img src="birdgameover.png" alt="Game Over" class="gameover-bg" id="img-gameover-screen" onerror="this.style.display='none'">
@@ -349,23 +337,18 @@
                 </div>
             </div>
         </div>
-
         <!-- Top Canvas Layer -->
         <canvas id="topCanvas"></canvas>
     </div>
-
     <script>
         const container = document.getElementById('game-container');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
         const topCanvas = document.getElementById('topCanvas');
         const topCtx = topCanvas.getContext('2d');
-
         // Horizontal Logical Stage
         const VIEW_W = 800;
         const VIEW_H = 450;
-
         function resizeCanvas() {
             const rect = container.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
@@ -376,10 +359,8 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-
         // --- WEB AUDIO API SYNTHESIZER & UNLOCKER ---
         let audioCtx = null;
-
         function unlockAudio() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -391,11 +372,9 @@
                 audioCtx.resume();
             }
         }
-
         ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
             window.addEventListener(evt, unlockAudio, { once: true });
         });
-
         function playFlapSound() {
             unlockAudio();
             if (!audioCtx) return;
@@ -412,7 +391,6 @@
             osc.start(now);
             osc.stop(now + 0.08);
         }
-
         function playScoreSound() {
             unlockAudio();
             if (!audioCtx) return;
@@ -427,7 +405,6 @@
             gain1.connect(audioCtx.destination);
             osc1.start(now);
             osc1.stop(now + 0.08);
-
             const osc2 = audioCtx.createOscillator();
             const gain2 = audioCtx.createGain();
             osc2.type = 'sine';
@@ -439,7 +416,6 @@
             osc2.start(now + 0.07);
             osc2.stop(now + 0.25);
         }
-
         function playHitSound() {
             unlockAudio();
             if (!audioCtx) return;
@@ -456,7 +432,6 @@
             osc.start(now);
             osc.stop(now + 0.18);
         }
-
         function playClickSound() {
             unlockAudio();
             if (!audioCtx) return;
@@ -473,7 +448,6 @@
             osc.start(now);
             osc.stop(now + 0.05);
         }
-
         // High Score Memory
         function loadSavedHighScore() {
             try {
@@ -486,7 +460,6 @@
             } catch (e) {}
             return 0;
         }
-
         function saveHighScore(val) {
             try {
                 localStorage.setItem('lemsbond_high_score', val.toString());
@@ -497,15 +470,12 @@
                 document.cookie = `lemsbond_high_score=${val};expires=${d.toUTCString()};path=/;SameSite=Lax`;
             } catch (e) {}
         }
-
         let highScore = loadSavedHighScore();
-
         function updateHighScoreUI() {
             const selectBestEl = document.getElementById('txt-select-best');
             if (selectBestEl) selectBestEl.innerText = highScore;
         }
         updateHighScoreUI();
-
         // Assets Loader
         const assets = {
             birds: [new Image(), new Image(), new Image()],
@@ -519,37 +489,6 @@
             },
             girls: [new Image(), new Image(), new Image()]
         };
-
-        // Automatic Transparent Margin Detector to bring colored sections together
-        function detectImageBounds(img) {
-            const tempCanvas = document.createElement('canvas');
-            const w = img.naturalWidth;
-            const h = img.naturalHeight;
-            tempCanvas.width = w;
-            tempCanvas.height = h;
-            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-            tempCtx.drawImage(img, 0, 0);
-            try {
-                const data = tempCtx.getImageData(0, 0, w, h).data;
-                let top = h, bottom = 0;
-                for (let y = 0; y < h; y++) {
-                    for (let x = 0; x < w; x++) {
-                        if (data[(y * w + x) * 4 + 3] > 30) {
-                            if (y < top) top = y;
-                            if (y > bottom) bottom = y;
-                        }
-                    }
-                }
-                return {
-                    topPaddingRatio: top / h,
-                    bottomPaddingRatio: (h - 1 - bottom) / h,
-                    contentHeightRatio: (bottom - top + 1) / h
-                };
-            } catch (e) {
-                return { topPaddingRatio: 0, bottomPaddingRatio: 0, contentHeightRatio: 1 };
-            }
-        }
-
         function generateAlphaMask(img) {
             const tempCanvas = document.createElement('canvas');
             const w = img.naturalWidth;
@@ -569,7 +508,6 @@
                 return null;
             }
         }
-
         function loadBirdAsset(index, src) {
             assets.birds[index].onload = () => {
                 assets.birdMasks[index] = generateAlphaMask(assets.birds[index]);
@@ -577,30 +515,18 @@
             };
             assets.birds[index].src = src;
         }
-
         loadBirdAsset(0, 'bird1.png');
         loadBirdAsset(1, 'bird2.png');
         loadBirdAsset(2, 'bird3.png');
-
         assets.backgrounds[0].src = 'background1.png';
         assets.backgrounds[1].src = 'background2.png';
         assets.backgrounds[2].src = 'background3.png';
-
-        assets.bottomPipes[0].onload = () => assets.pipeBounds.bottom[0] = detectImageBounds(assets.bottomPipes[0]);
-        assets.topPipes[0].onload = () => assets.pipeBounds.top[0] = detectImageBounds(assets.topPipes[0]);
         assets.bottomPipes[0].src = 'coin.png';
         assets.topPipes[0].src = 'coin.png';
-
-        assets.bottomPipes[1].onload = () => assets.pipeBounds.bottom[1] = detectImageBounds(assets.bottomPipes[1]);
-        assets.topPipes[1].onload = () => assets.pipeBounds.top[1] = detectImageBounds(assets.topPipes[1]);
         assets.bottomPipes[1].src = 'macaron.png';
         assets.topPipes[1].src = 'macaron.png';
-
-        assets.bottomPipes[2].onload = () => assets.pipeBounds.bottom[2] = detectImageBounds(assets.bottomPipes[2]);
-        assets.topPipes[2].onload = () => assets.pipeBounds.top[2] = detectImageBounds(assets.topPipes[2]);
         assets.bottomPipes[2].src = 'dragon.png';
         assets.topPipes[2].src = 'cloud.png';
-
         assets.girls[0].src = 'girl1.png';
         assets.girls[1].src = 'girl2.png';
         assets.girls[2].src = 'girl3.png';
@@ -610,15 +536,12 @@
         let currentState = STATES.START;
         let selectedVersion = 0;
         let score = 0;
-
         // Tuned Physics
         const gravity = 0.26;
         const jumpStrength = -5.6;
         const basePipeWidth = 72;
-
         let pipeSpeed = 2.2;
         let pipeGap = 175;
-
         // Player Bird Physics Object
         const bird = {
             x: 120,
@@ -628,7 +551,6 @@
             velocityY: 0,
             rotation: 0
         };
-
         // Flying bird1.png on menus
         const menuBird = {
             x: -120,
@@ -637,14 +559,12 @@
             vy: 1.4,
             angle: 0
         };
-
         // Particles & Girl Effects State
         let particles = [];
         let topParticles = [];
         let girlSparkles = [];
         let orbitAngle = 0;
         let girlAnimTime = 0;
-
         function spawnSteamParticle(customBird = null) {
             const b = customBird || bird;
             const angle = b.rotation || 0;
@@ -652,10 +572,8 @@
             const offsetY = b.height * 0.32;
             const cos = Math.cos(angle);
             const sin = Math.sin(angle);
-
             const px = (b.x + b.width / 2) + (offsetX * cos - offsetY * sin);
             const py = (b.y + b.height / 2) + (offsetX * sin + offsetY * cos);
-
             particles.push({
                 type: 'steam',
                 x: px,
@@ -668,7 +586,6 @@
                 maxLife: 22
             });
         }
-
         function spawnCandyParticle() {
             const candies = ['🍬', '🍭', '🍫', '🍩', '🧁'];
             const emoji = candies[Math.floor(Math.random() * candies.length)];
@@ -677,10 +594,8 @@
             const offsetY = bird.height * 0.35;
             const cos = Math.cos(angle);
             const sin = Math.sin(angle);
-
             const px = (bird.x + bird.width / 2) + (offsetX * cos - offsetY * sin);
             const py = (bird.y + bird.height / 2) + (offsetX * sin + offsetY * cos);
-
             particles.push({
                 type: 'candy',
                 emoji: emoji,
@@ -696,7 +611,6 @@
                 maxLife: 32
             });
         }
-
         function updateAndDrawParticles() {
             for (let i = particles.length - 1; i >= 0; i--) {
                 let p = particles[i];
@@ -704,12 +618,10 @@
                 p.y += p.vy;
                 p.life--;
                 p.alpha = Math.max(0, p.life / p.maxLife);
-
                 if (p.life <= 0) {
                     particles.splice(i, 1);
                     continue;
                 }
-
                 ctx.save();
                 if (p.type === 'steam') {
                     p.size += 0.45;
@@ -734,19 +646,16 @@
                 ctx.restore();
             }
         }
-
         function drawCirclingDragons() {
             orbitAngle += 0.07;
             const cx = bird.x + bird.width / 2;
             const cy = bird.y + bird.height / 2;
             const rx = 56;
             const ry = 32;
-
             for (let i = 0; i < 2; i++) {
                 const angle = orbitAngle + i * Math.PI;
                 const dx = cx + Math.cos(angle) * rx;
                 const dy = cy + Math.sin(angle) * ry;
-
                 ctx.save();
                 ctx.translate(dx, dy);
                 ctx.shadowColor = '#ffffff';
@@ -758,7 +667,6 @@
                 ctx.restore();
             }
         }
-
         function updateBirdBounds() {
             const img = assets.birds[selectedVersion];
             if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
@@ -772,7 +680,6 @@
                 }
             }
         }
-
         // Girls Rendering Function
         function drawGirlAndEffects() {
             girlAnimTime += 0.05;
@@ -781,18 +688,15 @@
             const girlTargetH = 210; 
             let girlW = 150;
             let girlH = girlTargetH;
-
             if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalHeight > 0) {
                 girlW = girlTargetH * (currentGirlImg.naturalWidth / currentGirlImg.naturalHeight);
             }
-
             const baseGirlX = VIEW_W - girlW - 15;
             const floatOffset = Math.sin(girlAnimTime * 1.5) * 10;
             const girlX = baseGirlX;
             const girlY = VIEW_H - girlH - 10 + floatOffset;
             const girlCenterX = girlX + girlW / 2;
             const girlCenterY = girlY + girlH / 2;
-
             if (selectedVersion === 0) {
                 ctx.save();
                 const totalPetals = 8;
@@ -802,7 +706,6 @@
                     const ry = girlH * 0.28;
                     const px = girlCenterX + Math.cos(angle) * rx;
                     const py = girlCenterY + Math.sin(angle) * ry * 0.7;
-
                     ctx.save();
                     ctx.translate(px, py);
                     ctx.rotate(angle + Math.PI / 4);
@@ -815,121 +718,137 @@
                     ctx.restore();
                 }
                 ctx.restore();
-
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
-
             } else if (selectedVersion === 1) {
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
-
                 const wandX = girlX + girlW * 0.15;
                 const wandY = girlY + girlH * 0.28;
-
                 ctx.save();
-                ctx.strokeStyle = 'rgba(255, 182, 193, 0.45)';
-                ctx.lineWidth = 2.5;
-                ctx.shadowColor = '#ff1493';
-                ctx.shadowBlur = 10;
-                for (let b = 0; b < 3; b++) {
-                    const beamAngle = (Math.PI) + (Math.sin(girlAnimTime * 2 + b) * 0.25);
-                    const length = 70 + Math.sin(girlAnimTime * 3 + b) * 25;
-                    ctx.beginPath();
-                    ctx.moveTo(wandX, wandY);
-                    ctx.lineTo(wandX + Math.cos(beamAngle) * length, wandY + Math.sin(beamAngle) * length);
-                    ctx.stroke();
+                
+                // Spawn Pink Firework Bursts
+                if (Math.random() < 0.25) {
+                    const burstX = wandX + (Math.random() - 0.5) * 50;
+                    const burstY = wandY + (Math.random() - 0.5) * 50;
+                    const numSparks = 14;
+                    for (let k = 0; k < numSparks; k++) {
+                        const angle = (k / numSparks) * Math.PI * 2 + Math.random() * 0.2;
+                        const speed = 1.6 + Math.random() * 2.8;
+                        girlSparkles.push({
+                            x: burstX,
+                            y: burstY,
+                            vx: Math.cos(angle) * speed,
+                            vy: Math.sin(angle) * speed,
+                            size: 1.2 + Math.random() * 1.8,
+                            color: Math.random() < 0.6 ? '#ff69b4' : (Math.random() < 0.5 ? '#ff1493' : '#ffffff'),
+                            life: 22 + Math.floor(Math.random() * 14),
+                            maxLife: 36
+                        });
+                    }
                 }
-
-                if (Math.random() < 0.6) {
-                    girlSparkles.push({
-                        x: wandX,
-                        y: wandY,
-                        vx: -2.2 - Math.random() * 2.5,
-                        vy: (Math.random() - 0.5) * 2.0,
-                        size: 4 + Math.random() * 7,
-                        alpha: 1.0,
-                        color: Math.random() < 0.5 ? '#ff69b4' : '#ffffff',
-                        life: 28
-                    });
-                }
-
+                
+                // Update & Draw Pink Fireworks Sparks
                 for (let s = girlSparkles.length - 1; s >= 0; s--) {
                     let sp = girlSparkles[s];
                     sp.x += sp.vx;
                     sp.y += sp.vy;
+                    sp.vx *= 0.95;
+                    sp.vy *= 0.95;
+                    sp.vy += 0.05; // Gravity on fireworks sparks
                     sp.life--;
-                    sp.alpha = Math.max(0, sp.life / 28);
-
+                    sp.alpha = Math.max(0, sp.life / sp.maxLife);
                     if (sp.life <= 0) {
                         girlSparkles.splice(s, 1);
                         continue;
                     }
-
-                    ctx.fillStyle = sp.color;
+                    ctx.save();
+                    ctx.globalAlpha = sp.alpha;
+                    ctx.strokeStyle = sp.color;
                     ctx.shadowColor = '#ff1493';
                     ctx.shadowBlur = 8;
-                    ctx.globalAlpha = sp.alpha;
+                    ctx.lineWidth = sp.size;
+                    ctx.lineCap = 'round';
+
+                    // Firework Spark Trail Line
                     ctx.beginPath();
-                    ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+                    ctx.moveTo(sp.x - sp.vx * 2.5, sp.y - sp.vy * 2.5);
+                    ctx.lineTo(sp.x, sp.y);
+                    ctx.stroke();
+
+                    // Spark Flare Head
+                    ctx.fillStyle = sp.color;
+                    ctx.beginPath();
+                    ctx.arc(sp.x, sp.y, sp.size * 0.8, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.restore();
                 }
                 ctx.restore();
-
             } else if (selectedVersion === 2) {
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
-
                 const headX = girlCenterX;
                 const headY = girlY - 15;
-
                 ctx.save();
                 ctx.shadowColor = '#ff0000';
                 ctx.shadowBlur = 12;
                 ctx.font = '24px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-
                 for (let h = 0; h < 3; h++) {
                     const angle = girlAnimTime * 1.5 + (h * Math.PI * 2 / 3);
                     const hx = headX + Math.cos(angle) * 38;
                     const hy = headY + Math.sin(angle) * 14;
-
                     ctx.fillText('❤️', hx, hy);
                 }
                 ctx.restore();
             }
         }
-
-        // Draw Pipes accounting for non-transparent pixel boundaries so colored parts align to gap
+        // Draw Pipes preserving original aspect ratio (stack vertically without leaving space or stretching proportions)
         function drawAlignedPipe(img, boundsInfo, x, targetY, width, totalHeight, isTopPipe) {
-            if (!img || !img.complete || img.naturalWidth === 0) return;
-
-            const b = boundsInfo || { topPaddingRatio: 0, bottomPaddingRatio: 0, contentHeightRatio: 1 };
+            if (!img || !img.complete || img.naturalWidth === 0 || totalHeight <= 0) return;
             
-            // Adjust draw height so transparent PNG padding overlaps outside gap, locking visible pixels to gap
-            const padOffset = (b.bottomPaddingRatio + b.topPaddingRatio) * totalHeight;
-            const drawH = totalHeight + padOffset;
+            // Calculate natural tile height corresponding to width without changing proportion
+            const tileH = width * (img.naturalHeight / img.naturalWidth);
+            if (tileH <= 0) return;
 
+            ctx.save();
             if (isTopPipe) {
-                const drawY = targetY - totalHeight + (b.bottomPaddingRatio * drawH);
-                ctx.drawImage(img, x, drawY - padOffset, width, drawH);
-            } else {
-                const drawY = targetY - (b.topPaddingRatio * drawH);
-                ctx.drawImage(img, x, drawY, width, drawH);
-            }
-        }
+                // Clip top pipe region
+                ctx.beginPath();
+                ctx.rect(x, 0, width, targetY);
+                ctx.clip();
 
+                // Stack PNG tiles from gap edge (targetY) upwards with 0 gap
+                let currY = targetY - tileH;
+                while (currY + tileH > 0) {
+                    ctx.drawImage(img, x, currY, width, tileH);
+                    currY -= tileH;
+                }
+            } else {
+                // Clip bottom pipe region
+                ctx.beginPath();
+                ctx.rect(x, targetY, width, VIEW_H - targetY);
+                ctx.clip();
+
+                // Stack PNG tiles from gap edge (targetY) downwards with 0 gap
+                let currY = targetY;
+                while (currY < VIEW_H) {
+                    ctx.drawImage(img, x, currY, width, tileH);
+                    currY += tileH;
+                }
+            }
+            ctx.restore();
+        }
         // Pipes Logic
         let pipes = [];
-
         function spawnPipes() {
             const minHeight = 50;
             const maxHeight = VIEW_H - pipeGap - minHeight;
             const topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
-
             pipes.push({
                 x: VIEW_W,
                 topHeight: topHeight,
@@ -937,7 +856,6 @@
                 passed: false
             });
         }
-
         function resetGame() {
             bird.y = 180;
             bird.velocityY = 0;
@@ -950,7 +868,6 @@
             pipeGap = 175;
             spawnPipes();
         }
-
         function selectVersion(v) {
             playClickSound();
             selectedVersion = v;
@@ -959,14 +876,12 @@
             resetGame();
             currentState = STATES.PLAYING;
         }
-
         function handleJump() {
             if (currentState === STATES.PLAYING) {
                 bird.velocityY = jumpStrength;
                 playFlapSound();
             }
         }
-
         // Inputs
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
@@ -974,10 +889,8 @@
                 e.preventDefault();
             }
         });
-
         container.addEventListener('pointerdown', (e) => {
             if (e.target.closest('button') || e.target.closest('.version-card')) return;
-
             if (currentState === STATES.START) {
                 playClickSound();
                 currentState = STATES.SELECT;
@@ -992,27 +905,22 @@
                 currentState = STATES.SELECT;
             }
         });
-
         document.getElementById('btn-start-proceed').addEventListener('click', () => {
             playClickSound();
             currentState = STATES.SELECT;
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('select-screen').classList.remove('hidden');
         });
-
         // Pixel-Precise Collision Detection
         function checkPixelCollision(birdX, birdY, birdW, birdH, maskData, pipeX, pipeY, pipeW, pipeH) {
             const ix0 = Math.max(birdX, pipeX);
             const iy0 = Math.max(birdY, pipeY);
             const ix1 = Math.min(birdX + birdW, pipeX + pipeW);
             const iy1 = Math.min(birdY + birdH, pipeY + pipeH);
-
             if (ix0 >= ix1 || iy0 >= iy1) return false;
             if (!maskData || !maskData.mask) return true;
-
             const scaleX = maskData.width / birdW;
             const scaleY = maskData.height / birdH;
-
             for (let y = iy0; y < iy1; y++) {
                 for (let x = ix0; x < ix1; x++) {
                     const bx = Math.floor((x - birdX) * scaleX);
@@ -1026,40 +934,31 @@
             }
             return false;
         }
-
         function checkCollision(p) {
             const birdMask = assets.birdMasks[selectedVersion];
             const topHit = checkPixelCollision(bird.x, bird.y, bird.width, bird.height, birdMask, p.x, 0, basePipeWidth, p.topHeight);
             if (topHit) return true;
-
             const bottomHit = checkPixelCollision(bird.x, bird.y, bird.width, bird.height, birdMask, p.x, p.bottomY, basePipeWidth, VIEW_H - p.bottomY);
             if (bottomHit) return true;
-
             return false;
         }
-
         // Front Layer Top Canvas Drawing Function
         function updateAndDrawTopLayer(scale) {
             topCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
-
             if (currentState === STATES.SELECT || currentState === STATES.GAMEOVER || currentState === STATES.START) {
                 topCtx.save();
                 topCtx.scale(scale, scale);
-
                 menuBird.x += menuBird.vx;
                 menuBird.y += Math.sin(menuBird.angle) * menuBird.vy;
                 menuBird.angle += 0.04;
-
                 if (menuBird.x > VIEW_W + 150) {
                     menuBird.x = -160;
                     menuBird.y = 50 + Math.random() * (VIEW_H - 180);
                 }
-
                 if (Math.random() < 0.5) {
                     const mImg = assets.birds[0];
                     let mbH = 135;
                     let mbW = (mImg && mImg.complete && mImg.naturalHeight > 0) ? mbH * (mImg.naturalWidth / mImg.naturalHeight) : mbH;
-
                     topParticles.push({
                         x: menuBird.x + mbW * 0.15,
                         y: menuBird.y + mbH * 0.65,
@@ -1071,19 +970,16 @@
                         maxLife: 25
                     });
                 }
-
                 for (let i = topParticles.length - 1; i >= 0; i--) {
                     let tp = topParticles[i];
                     tp.x += tp.vx;
                     tp.y += tp.vy;
                     tp.life--;
                     tp.alpha = Math.max(0, tp.life / tp.maxLife);
-
                     if (tp.life <= 0) {
                         topParticles.splice(i, 1);
                         continue;
                     }
-
                     topCtx.fillStyle = `rgba(240, 248, 255, ${tp.alpha})`;
                     topCtx.shadowColor = '#ffffff';
                     topCtx.shadowBlur = 10;
@@ -1091,7 +987,6 @@
                     topCtx.arc(tp.x, tp.y, tp.size, 0, Math.PI * 2);
                     topCtx.fill();
                 }
-
                 const mImg = assets.birds[0];
                 if (mImg && mImg.complete && mImg.naturalWidth > 0) {
                     let mbH = 135;
@@ -1103,19 +998,15 @@
                     topCtx.drawImage(mImg, menuBird.x, menuBird.y, mbW, mbH);
                     topCtx.restore();
                 }
-
                 topCtx.restore();
             }
         }
-
         // Main Game Loop
         function gameLoop(now) {
             requestAnimationFrame(gameLoop);
-
             ctx.save();
             const scale = canvas.width / VIEW_W;
             ctx.scale(scale, scale);
-
             // Draw Background
             const bgImg = assets.backgrounds[selectedVersion];
             if (bgImg && bgImg.complete && bgImg.naturalWidth > 0) {
@@ -1124,21 +1015,16 @@
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(0, 0, VIEW_W, VIEW_H);
             }
-
             if (currentState === STATES.PLAYING) {
                 bird.velocityY += gravity;
                 bird.y += bird.velocityY;
-
                 bird.rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, bird.velocityY * 0.08));
-
                 if (selectedVersion === 0) {
                     if (Math.random() < 0.6) spawnSteamParticle();
                 } else if (selectedVersion === 1) {
                     if (Math.random() < 0.5) spawnCandyParticle();
                 }
-
                 updateAndDrawParticles();
-
                 // Floor / Ceiling Collision
                 if (bird.y + bird.height >= VIEW_H || bird.y <= 0) {
                     playHitSound();
@@ -1146,22 +1032,18 @@
                     document.getElementById('txt-final-score').innerText = `Score: ${score}`;
                     document.getElementById('gameover-screen').classList.remove('hidden');
                 }
-
-                // Update & Render Pipes (Aligned using non-transparent pixel edges)
+                // Update & Render Pipes (Proportional vertically stacked PNG tiles)
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     let p = pipes[i];
                     p.x -= pipeSpeed;
-
-                    // Draw Top Pipe aligned to visible pixel content
+                    // Draw Top Pipe
                     const topImg = assets.topPipes[selectedVersion];
                     const topBounds = assets.pipeBounds.top[selectedVersion];
                     drawAlignedPipe(topImg, topBounds, p.x, p.topHeight, basePipeWidth, p.topHeight, true);
-
-                    // Draw Bottom Pipe aligned to visible pixel content
+                    // Draw Bottom Pipe
                     const bottomImg = assets.bottomPipes[selectedVersion];
                     const bottomBounds = assets.pipeBounds.bottom[selectedVersion];
                     drawAlignedPipe(bottomImg, bottomBounds, p.x, p.bottomY, basePipeWidth, VIEW_H - p.bottomY, false);
-
                     // Collision Check
                     if (checkCollision(p)) {
                         playHitSound();
@@ -1169,7 +1051,6 @@
                         document.getElementById('txt-final-score').innerText = `Score: ${score}`;
                         document.getElementById('gameover-screen').classList.remove('hidden');
                     }
-
                     // Score Increment
                     if (!p.passed && p.x + basePipeWidth < bird.x) {
                         p.passed = true;
@@ -1181,18 +1062,15 @@
                             updateHighScoreUI();
                         }
                     }
-
                     // Remove off-screen pipes
                     if (p.x + basePipeWidth < 0) {
                         pipes.splice(i, 1);
                     }
                 }
-
                 // Spawn Pipes
                 if (pipes.length === 0 || pipes[pipes.length - 1].x < VIEW_W - 260) {
                     spawnPipes();
                 }
-
                 // Draw Player Bird
                 ctx.save();
                 ctx.translate(bird.x + bird.width / 2, bird.y + bird.height / 2);
@@ -1202,15 +1080,12 @@
                     ctx.drawImage(bImg, -bird.width / 2, -bird.height / 2, bird.width, bird.height);
                 }
                 ctx.restore();
-
                 // Draw Version 3 Dragons
                 if (selectedVersion === 2) {
                     drawCirclingDragons();
                 }
-
                 // Draw Selected Girl & Special Effects
                 drawGirlAndEffects();
-
                 // Draw In-Game Score Text
                 ctx.fillStyle = '#ffffff';
                 ctx.strokeStyle = '#000000';
@@ -1220,12 +1095,9 @@
                 ctx.strokeText(score.toString(), VIEW_W / 2, 50);
                 ctx.fillText(score.toString(), VIEW_W / 2, 50);
             }
-
             ctx.restore();
-
             updateAndDrawTopLayer(scale);
         }
-
         requestAnimationFrame(gameLoop);
     </script>
 </body>
