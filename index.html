@@ -40,6 +40,10 @@
             text-align: center;
             padding: 24px;
             backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+        #rotate-overlay.dismissed {
+            display: none !important;
         }
         .rotate-icon {
             font-size: 3.5rem;
@@ -59,11 +63,18 @@
         #rotate-overlay p {
             font-size: clamp(0.85rem, 2.5vw, 1.1rem);
             color: #94a3b8;
-            max-width: 300px;
+            max-width: 320px;
             line-height: 1.4;
         }
+        .dismiss-text {
+            margin-top: 18px;
+            font-size: 0.85rem;
+            color: #feb47b;
+            text-decoration: underline;
+            font-weight: 600;
+        }
         @media (orientation: portrait) {
-            #rotate-overlay {
+            #rotate-overlay:not(.dismissed) {
                 display: flex;
             }
         }
@@ -335,12 +346,12 @@
 </head>
 <body>
     <!-- Orientation Prompt Overlay for Mobile Portrait Mode -->
-    <div id="rotate-overlay">
+    <div id="rotate-overlay" onclick="dismissRotateOverlay()">
         <div class="rotate-icon">📱</div>
         <h2>Please Rotate Your Device</h2>
         <p>This game is best experienced horizontally in landscape mode.</p>
+        <div class="dismiss-text">Tap anywhere to play anyway</div>
     </div>
-
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
         <!-- Start Screen -->
@@ -409,6 +420,11 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
+
+        function dismissRotateOverlay() {
+            document.getElementById('rotate-overlay').classList.add('dismissed');
+        }
+
         // --- WEB AUDIO API SYNTHESIZER & UNLOCKER ---
         let audioCtx = null;
         function unlockAudio() {
@@ -580,7 +596,6 @@
         assets.girls[0].src = 'girl1.png';
         assets.girls[1].src = 'girl2.png';
         assets.girls[2].src = 'girl3.png';
-
         // Game State
         const STATES = { START: 0, SELECT: 1, PLAYING: 2, GAMEOVER: 3 };
         let currentState = STATES.START;
@@ -676,8 +691,6 @@
                 if (p.type === 'steam') {
                     p.size += 0.45;
                     ctx.fillStyle = `rgba(240, 248, 255, ${p.alpha * 0.88})`;
-                    ctx.shadowColor = '#ffffff';
-                    ctx.shadowBlur = 10;
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fill();
@@ -686,8 +699,6 @@
                     ctx.translate(p.x, p.y);
                     ctx.rotate(p.rot);
                     ctx.globalAlpha = p.alpha;
-                    ctx.shadowColor = '#ffffff';
-                    ctx.shadowBlur = 10;
                     ctx.font = `${p.size}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
@@ -708,8 +719,6 @@
                 const dy = cy + Math.sin(angle) * ry;
                 ctx.save();
                 ctx.translate(dx, dy);
-                ctx.shadowColor = '#ffffff';
-                ctx.shadowBlur = 12;
                 ctx.font = '24px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -730,7 +739,7 @@
                 }
             }
         }
-        // Girls Rendering Function
+        // Optimized Girls Rendering Function
         function drawGirlAndEffects() {
             girlAnimTime += 0.05;
             const currentGirlImg = assets.girls[selectedVersion];
@@ -747,6 +756,7 @@
             const girlY = VIEW_H - girlH - 10 + floatOffset;
             const girlCenterX = girlX + girlW / 2;
             const girlCenterY = girlY + girlH / 2;
+
             if (selectedVersion === 0) {
                 ctx.save();
                 const totalPetals = 8;
@@ -760,8 +770,6 @@
                     ctx.translate(px, py);
                     ctx.rotate(angle + Math.PI / 4);
                     ctx.fillStyle = i % 2 === 0 ? '#ffb6c1' : '#ffffff';
-                    ctx.shadowColor = '#ff69b4';
-                    ctx.shadowBlur = 8;
                     ctx.beginPath();
                     ctx.ellipse(0, 0, 9, 5, 0, 0, Math.PI * 2);
                     ctx.fill();
@@ -777,63 +785,63 @@
                 }
                 const wandX = girlX + girlW * 0.15;
                 const wandY = girlY + girlH * 0.28;
-                ctx.save();
-                
-                // Spawn Pink Firework Bursts
-                if (Math.random() < 0.25) {
-                    const burstX = wandX + (Math.random() - 0.5) * 50;
-                    const burstY = wandY + (Math.random() - 0.5) * 50;
-                    const numSparks = 14;
+
+                if (Math.random() < 0.2) {
+                    const burstX = wandX + (Math.random() - 0.5) * 40;
+                    const burstY = wandY + (Math.random() - 0.5) * 40;
+                    const numSparks = 8;
                     for (let k = 0; k < numSparks; k++) {
                         const angle = (k / numSparks) * Math.PI * 2 + Math.random() * 0.2;
-                        const speed = 1.6 + Math.random() * 2.8;
+                        const speed = 1.6 + Math.random() * 2.5;
                         girlSparkles.push({
                             x: burstX,
                             y: burstY,
                             vx: Math.cos(angle) * speed,
                             vy: Math.sin(angle) * speed,
-                            size: 1.2 + Math.random() * 1.8,
+                            size: 1.2 + Math.random() * 1.5,
                             color: Math.random() < 0.6 ? '#ff69b4' : (Math.random() < 0.5 ? '#ff1493' : '#ffffff'),
-                            life: 22 + Math.floor(Math.random() * 14),
-                            maxLife: 36
+                            life: 20 + Math.floor(Math.random() * 12),
+                            maxLife: 32
                         });
                     }
                 }
-                
-                // Update & Draw Pink Fireworks Sparks
-                for (let s = girlSparkles.length - 1; s >= 0; s--) {
-                    let sp = girlSparkles[s];
-                    sp.x += sp.vx;
-                    sp.y += sp.vy;
-                    sp.vx *= 0.95;
-                    sp.vy *= 0.95;
-                    sp.vy += 0.05;
-                    sp.life--;
-                    sp.alpha = Math.max(0, sp.life / sp.maxLife);
-                    if (sp.life <= 0) {
-                        girlSparkles.splice(s, 1);
-                        continue;
-                    }
+
+                if (girlSparkles.length > 0) {
                     ctx.save();
-                    ctx.globalAlpha = sp.alpha;
-                    ctx.strokeStyle = sp.color;
-                    ctx.shadowColor = '#ff1493';
-                    ctx.shadowBlur = 8;
-                    ctx.lineWidth = sp.size;
+                    ctx.globalCompositeOperation = 'lighter';
                     ctx.lineCap = 'round';
 
-                    ctx.beginPath();
-                    ctx.moveTo(sp.x - sp.vx * 2.5, sp.y - sp.vy * 2.5);
-                    ctx.lineTo(sp.x, sp.y);
-                    ctx.stroke();
+                    for (let s = girlSparkles.length - 1; s >= 0; s--) {
+                        let sp = girlSparkles[s];
+                        sp.x += sp.vx;
+                        sp.y += sp.vy;
+                        sp.vx *= 0.95;
+                        sp.vy *= 0.95;
+                        sp.vy += 0.05;
+                        sp.life--;
 
-                    ctx.fillStyle = sp.color;
-                    ctx.beginPath();
-                    ctx.arc(sp.x, sp.y, sp.size * 0.8, 0, Math.PI * 2);
-                    ctx.fill();
+                        if (sp.life <= 0) {
+                            girlSparkles.splice(s, 1);
+                            continue;
+                        }
+
+                        const alpha = Math.max(0, sp.life / sp.maxLife);
+                        ctx.globalAlpha = alpha;
+
+                        ctx.strokeStyle = sp.color;
+                        ctx.lineWidth = sp.size;
+                        ctx.beginPath();
+                        ctx.moveTo(sp.x - sp.vx * 2, sp.y - sp.vy * 2);
+                        ctx.lineTo(sp.x, sp.y);
+                        ctx.stroke();
+
+                        ctx.fillStyle = sp.color;
+                        ctx.beginPath();
+                        ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                     ctx.restore();
                 }
-                ctx.restore();
             } else if (selectedVersion === 2) {
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
@@ -841,8 +849,6 @@
                 const headX = girlCenterX;
                 const headY = girlY - 15;
                 ctx.save();
-                ctx.shadowColor = '#ff0000';
-                ctx.shadowBlur = 12;
                 ctx.font = '24px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -861,13 +867,11 @@
             
             const tileH = width * (img.naturalHeight / img.naturalWidth);
             if (tileH <= 0) return;
-
             ctx.save();
             if (isTopPipe) {
                 ctx.beginPath();
                 ctx.rect(x, 0, width, targetY);
                 ctx.clip();
-
                 let currY = targetY - tileH;
                 while (currY + tileH > 0) {
                     ctx.drawImage(img, x, currY, width, tileH);
@@ -877,7 +881,6 @@
                 ctx.beginPath();
                 ctx.rect(x, targetY, width, VIEW_H - targetY);
                 ctx.clip();
-
                 let currY = targetY;
                 while (currY < VIEW_H) {
                     ctx.drawImage(img, x, currY, width, tileH);
@@ -932,8 +935,8 @@
                 e.preventDefault();
             }
         });
-        container.addEventListener('pointerdown', (e) => {
-            if (e.target.closest('button') || e.target.closest('.version-card')) return;
+        window.addEventListener('pointerdown', (e) => {
+            if (e.target.closest('button') || e.target.closest('.version-card') || e.target.closest('#rotate-overlay')) return;
             if (currentState === STATES.START) {
                 playClickSound();
                 currentState = STATES.SELECT;
@@ -1024,8 +1027,6 @@
                         continue;
                     }
                     topCtx.fillStyle = `rgba(240, 248, 255, ${tp.alpha})`;
-                    topCtx.shadowColor = '#ffffff';
-                    topCtx.shadowBlur = 10;
                     topCtx.beginPath();
                     topCtx.arc(tp.x, tp.y, tp.size, 0, Math.PI * 2);
                     topCtx.fill();
@@ -1036,8 +1037,6 @@
                     let mbW = mbH * (mImg.naturalWidth / mImg.naturalHeight);
                     
                     topCtx.save();
-                    topCtx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-                    topCtx.shadowBlur = 18;
                     topCtx.drawImage(mImg, menuBird.x, menuBird.y, mbW, mbH);
                     topCtx.restore();
                 }
