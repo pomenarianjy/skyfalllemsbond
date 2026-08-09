@@ -19,42 +19,51 @@
             height: 100%;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #0f172a;
-            color: #f8fafc;
+            background: #090d16;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
+        /* Centered game container with fixed 9:16 ratio */
         #game-container {
             position: relative;
-            width: 100vw;
             height: 100vh;
+            width: 56.25vh; /* Exactly 9:16 ratio */
+            max-width: 100vw;
+            max-height: 177.78vw; /* Exactly 16:9 inverse */
+            aspect-ratio: 9 / 16;
             overflow: hidden;
             background: #000;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
         }
 
         canvas {
             display: block;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             image-rendering: -webkit-optimize-contrast;
         }
 
-        /* Overlays */
+        /* Overlays Base Style */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             z-index: 10;
             padding: 24px 16px;
             text-align: center;
+        }
+
+        /* Start and Option Pages Background Fix */
+        #start-screen, #select-screen {
+            background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.65)), url('background1.png') center/cover no-repeat;
         }
 
         .hidden {
@@ -62,10 +71,10 @@
         }
 
         h1 {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: #ffffff;
             letter-spacing: -0.5px;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
             margin-top: 10px;
             font-weight: 800;
         }
@@ -74,16 +83,16 @@
             background: linear-gradient(135deg, #ff7e5f, #feb47b);
             border: none;
             color: white;
-            padding: 16px 36px;
-            font-size: 1.25rem;
+            padding: 14px 32px;
+            font-size: 1.1rem;
             font-weight: 700;
             border-radius: 9999px;
             cursor: pointer;
-            box-shadow: 0 10px 25px -5px rgba(255, 126, 95, 0.5);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            margin-bottom: 30px;
-            width: 85%;
-            max-width: 320px;
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4);
+            transition: transform 0.15s ease;
+            margin-bottom: 20px;
+            width: 80%;
+            max-width: 280px;
         }
 
         .btn:active {
@@ -92,17 +101,76 @@
 
         /* Start Screen Image */
         .start-img {
-            flex: 1;
+            max-width: 75%;
+            max-height: 45%;
             width: auto;
             height: auto;
-            max-width: 88vw;
-            max-height: 58vh;
             object-fit: contain;
             margin: auto;
-            filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.3));
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
         }
 
-        /* Fullscreen Game Over Overlay */
+        /* Selection Container and Compact Proportional Cards */
+        .selection-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            margin: auto 0;
+        }
+
+        .version-card {
+            flex: 1;
+            height: auto; /* Dynamic height based on tight content */
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 16px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center components tightly */
+            gap: 10px; /* Small gap between image and text */
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+            transition: transform 0.15s ease;
+        }
+
+        .version-card:active {
+            transform: scale(0.95);
+            background: #ffffff;
+        }
+
+        .version-card img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+        }
+
+        .card-text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .version-title {
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .version-desc {
+            font-size: 0.68rem;
+            color: #64748b;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        /* Fullscreen Game Over Screen */
         #gameover-screen {
             padding: 0;
             justify-content: center;
@@ -113,9 +181,10 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+            object-position: center;
             z-index: 1;
         }
 
@@ -128,90 +197,31 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            padding-bottom: 60px;
-            background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.75) 100%);
+            padding-bottom: 50px;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%);
         }
 
         .score-box {
             background: rgba(255, 255, 255, 0.95);
-            padding: 20px 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 18px 36px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
             border: 1px solid rgba(255, 255, 255, 0.3);
             text-align: center;
             cursor: pointer;
-            backdrop-filter: blur(8px);
         }
 
         .score-box h2 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #0f172a;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             font-weight: 800;
         }
 
         .score-box p {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #16a34a;
             font-weight: 700;
-        }
-
-        /* Selection Cards */
-        .selection-container {
-            flex: 1;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            width: 98vw;
-            max-width: 520px;
-            margin: 20px 0;
-        }
-
-        .version-card {
-            flex: 1;
-            height: 60vh;
-            max-height: 380px;
-            background: rgba(255, 255, 255, 0.92);
-            border: 2px solid transparent;
-            border-radius: 24px;
-            padding: 16px 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .version-card:active {
-            transform: scale(0.96);
-            border-color: #22c55e;
-            background: #ffffff;
-        }
-
-        .version-card img {
-            width: auto;
-            height: auto;
-            max-width: 92%;
-            max-height: 120px;
-            object-fit: contain;
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
-        }
-
-        .version-title {
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: #0f172a;
-            margin-bottom: 2px;
-        }
-
-        .version-desc {
-            font-size: 0.78rem;
-            color: #64748b;
-            font-weight: 600;
         }
     </style>
 </head>
@@ -220,20 +230,20 @@
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
 
-        <!-- Start Screen Overlay -->
+        <!-- Start Screen Overlay with background1.png -->
         <div id="start-screen" class="overlay">
             <h1>Lems Bond Skyfall</h1>
             <img src="birdstart.png" alt="Start Bird" class="start-img" id="img-start-screen" onerror="this.style.display='none'">
             <button class="btn" id="btn-start-proceed">Tap to Play</button>
         </div>
 
-        <!-- Selection Screen Overlay -->
+        <!-- Selection Screen Overlay with background1.png -->
         <div id="select-screen" class="overlay hidden">
             <h1>Select Theme</h1>
             <div class="selection-container">
                 <div class="version-card" onclick="selectVersion(1)">
                     <img src="bird1.png" alt="Banker" onerror="this.style.display='none'">
-                    <div>
+                    <div class="card-text-group">
                         <div class="version-title">The Banker</div>
                         <div class="version-desc">Coins & Wealth</div>
                     </div>
@@ -241,7 +251,7 @@
 
                 <div class="version-card" onclick="selectVersion(2)">
                     <img src="bird2.png" alt="Paris" onerror="this.style.display='none'">
-                    <div>
+                    <div class="card-text-group">
                         <div class="version-title">Paris</div>
                         <div class="version-desc">Macarons & Romance</div>
                     </div>
@@ -249,7 +259,7 @@
 
                 <div class="version-card" onclick="selectVersion(3)">
                     <img src="bird3.png" alt="Hong Kong" onerror="this.style.display='none'">
-                    <div>
+                    <div class="card-text-group">
                         <div class="version-title">Hong Kong</div>
                         <div class="version-desc">Dragons & Clouds</div>
                     </div>
@@ -257,7 +267,7 @@
             </div>
         </div>
 
-        <!-- Fullscreen Game Over Screen -->
+        <!-- Game Over Screen -->
         <div id="gameover-screen" class="overlay hidden">
             <img src="birdgameover.png" alt="Game Over" class="gameover-bg" id="img-gameover-screen" onerror="this.style.display='none'">
             <div class="gameover-content">
@@ -270,20 +280,22 @@
     </div>
 
     <script>
+        const container = document.getElementById('game-container');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // Internal Logical Canvas Stage (360 x 640 = 9:16 ratio)
+        const VIEW_W = 360;
+        const VIEW_H = 640;
+
         function resizeCanvas() {
+            const rect = container.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
-            canvas.width = window.innerWidth * dpr;
-            canvas.height = window.innerHeight * dpr;
-            ctx.scale(dpr, dpr);
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-
-        const getLogicalWidth = () => window.innerWidth;
-        const getLogicalHeight = () => window.innerHeight;
 
         // Assets Loader
         const assets = {
@@ -294,7 +306,6 @@
             birdMasks: [null, null, null]
         };
 
-        // Generates binary alpha mask array (1 for colored pixel, 0 for transparent)
         function generateAlphaMask(img) {
             const tempCanvas = document.createElement('canvas');
             const w = img.naturalWidth;
@@ -310,12 +321,10 @@
                 const mask = new Uint8Array(w * h);
 
                 for (let i = 0; i < w * h; i++) {
-                    // Alpha channel > 30 represents visible colored pixel
                     mask[i] = imgData[i * 4 + 3] > 30 ? 1 : 0;
                 }
                 return { mask, width: w, height: h };
             } catch (e) {
-                console.warn('Could not extract pixel alpha mask', e);
                 return null;
             }
         }
@@ -323,6 +332,7 @@
         function loadBirdAsset(index, src) {
             assets.birds[index].onload = () => {
                 assets.birdMasks[index] = generateAlphaMask(assets.birds[index]);
+                if (selectedVersion === index) updateBirdBounds();
             };
             assets.birds[index].src = src;
         }
@@ -344,7 +354,7 @@
         assets.bottomPipes[2].src = 'dragon.png';
         assets.topPipes[2].src = 'cloud.png';
 
-        // State Variables
+        // Game State
         const STATES = { START: 0, SELECT: 1, PLAYING: 2, GAMEOVER: 3 };
         let currentState = STATES.START;
         let selectedVersion = 0;
@@ -355,20 +365,33 @@
         // Physics
         const gravity = 0.32;
         const jumpStrength = -6.2;
-        const basePipeWidth = 68;
+        const basePipeWidth = 60;
 
         let pipeSpeed = 2.4;
-        let pipeGap = 145;
+        let pipeGap = 140;
 
         const bird = {
-            x: 70,
-            y: 300,
-            targetWidth: 50,
-            width: 50,
-            height: 50,
+            x: 65,
+            y: 260,
+            width: 44,
+            height: 44,
             velocityY: 0,
             rotation: 0
         };
+
+        function updateBirdBounds() {
+            const img = assets.birds[selectedVersion];
+            if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
+                const maxDim = 44;
+                if (img.naturalWidth >= img.naturalHeight) {
+                    bird.width = maxDim;
+                    bird.height = maxDim * (img.naturalHeight / img.naturalWidth);
+                } else {
+                    bird.height = maxDim;
+                    bird.width = maxDim * (img.naturalWidth / img.naturalHeight);
+                }
+            }
+        }
 
         let pipes = [];
         let spawnTimer = 0;
@@ -389,6 +412,7 @@
 
         function selectVersion(v) {
             selectedVersion = v - 1;
+            updateBirdBounds();
             selectScreen.classList.add('hidden');
             gameoverScreen.classList.add('hidden');
             resetGame();
@@ -396,14 +420,15 @@
         }
 
         function resetGame() {
-            bird.y = getLogicalHeight() * 0.4;
+            bird.y = VIEW_H * 0.4;
             bird.velocityY = 0;
             bird.rotation = 0;
             pipes = [];
             score = 0;
             pipeSpeed = 2.4;
-            pipeGap = 145;
+            pipeGap = 140;
             spawnTimer = 0;
+            updateBirdBounds();
         }
 
         function handleInput() {
@@ -429,37 +454,33 @@
         gameoverScreen.addEventListener('click', handleInput);
 
         function spawnPipe() {
-            const logicalH = getLogicalHeight();
-            const groundY = logicalH - 40;
-
+            const groundY = VIEW_H - 36;
             const levelMultiplier = Math.floor(score / 10);
             pipeSpeed = 2.4 + (levelMultiplier * 0.35);
-            pipeGap = Math.max(115, 145 - (levelMultiplier * 4));
+            pipeGap = Math.max(110, 140 - (levelMultiplier * 4));
 
-            const minHeight = 70;
+            const minHeight = 60;
             const maxHeight = groundY - pipeGap - minHeight;
             const topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
 
             pipes.push({
-                x: getLogicalWidth(),
+                x: VIEW_W,
                 topHeight: topHeight,
                 bottomY: topHeight + pipeGap,
                 passed: false
             });
         }
 
-        // True Pixel-Perfect Alpha Collision
         function checkCollision(b, pipe) {
+            updateBirdBounds();
             const maskData = assets.birdMasks[selectedVersion];
-            const logicalH = getLogicalHeight();
-            const groundY = logicalH - 40;
+            const groundY = VIEW_H - 36;
 
             const pipeLeft = pipe.x;
             const pipeRight = pipe.x + basePipeWidth;
             const topPipeBottom = pipe.topHeight;
             const bottomPipeTop = pipe.bottomY;
 
-            // Fallback rectangular check if mask fails
             if (!maskData) {
                 if (b.y <= 0 || (b.y + b.height) >= groundY) return true;
                 if ((b.x + b.width) > pipeLeft && b.x < pipeRight) {
@@ -474,32 +495,24 @@
             const cos = Math.cos(b.rotation);
             const sin = Math.sin(b.rotation);
 
-            // Sub-sampled resolution step for ultra-fast 60fps performance
             const step = Math.max(1, Math.floor(imgW / 24));
 
             for (let py = 0; py < imgH; py += step) {
                 for (let px = 0; px < imgW; px += step) {
-                    if (mask[py * imgW + px] === 1) { // Colored visible pixel
+                    if (mask[py * imgW + px] === 1) {
                         const nx = (px / imgW) - 0.5;
                         const ny = (py / imgH) - 0.5;
 
                         const localX = nx * b.width;
                         const localY = ny * b.height;
 
-                        // Rotated local coordinates translated to world space
                         const wx = cx + (localX * cos - localY * sin);
                         const wy = cy + (localX * sin + localY * cos);
 
-                        // Ceiling / Ground collision
-                        if (wy <= 0 || wy >= groundY) {
-                            return true;
-                        }
+                        if (wy <= 0 || wy >= groundY) return true;
 
-                        // Obstacle collision
                         if (wx >= pipeLeft && wx <= pipeRight) {
-                            if (wy <= topPipeBottom || wy >= bottomPipeTop) {
-                                return true;
-                            }
+                            if (wy <= topPipeBottom || wy >= bottomPipeTop) return true;
                         }
                     }
                 }
@@ -539,9 +552,7 @@
         }
 
         function drawBird(img, b) {
-            const aspect = (img.complete && img.naturalWidth > 0) ? (img.naturalHeight / img.naturalWidth) : 1;
-            b.width = b.targetWidth;
-            b.height = b.targetWidth * aspect;
+            updateBirdBounds();
 
             ctx.save();
             ctx.translate(b.x + b.width / 2, b.y + b.height / 2);
@@ -560,16 +571,16 @@
             ctx.restore();
         }
 
-        function drawCleanHUD(w, h) {
-            const pillW = 120;
-            const pillH = 54;
-            const pillX = w - pillW - 16;
-            const pillY = 16;
+        function drawCleanHUD() {
+            const pillW = 100;
+            const pillH = 46;
+            const pillX = VIEW_W - pillW - 14;
+            const pillY = 14;
 
             ctx.save();
             ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
             ctx.beginPath();
-            ctx.roundRect(pillX, pillY, pillW, pillH, 16);
+            ctx.roundRect(pillX, pillY, pillW, pillH, 12);
             ctx.fill();
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 1;
@@ -577,12 +588,12 @@
 
             ctx.textAlign = 'right';
             ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-            ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            ctx.fillText(`BEST ${highScore}`, pillX + pillW - 14, pillY + 20);
+            ctx.font = '600 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillText(`BEST ${highScore}`, pillX + pillW - 12, pillY + 16);
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = '800 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            ctx.fillText(`${score}`, pillX + pillW - 14, pillY + 44);
+            ctx.font = '800 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillText(`${score}`, pillX + pillW - 12, pillY + 36);
             ctx.restore();
         }
 
@@ -593,26 +604,25 @@
         }
 
         function gameLoop() {
-            const w = getLogicalWidth();
-            const h = getLogicalHeight();
-            const groundY = h - 40;
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
 
-            ctx.clearRect(0, 0, w, h);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.scale((rect.width * dpr) / VIEW_W, (rect.height * dpr) / VIEW_H);
 
-            // Render Environment Background
             const bgImg = assets.backgrounds[selectedVersion];
             if ((currentState === STATES.PLAYING || currentState === STATES.GAMEOVER) && bgImg.complete && bgImg.naturalWidth > 0) {
-                ctx.drawImage(bgImg, 0, 0, w, h);
+                ctx.drawImage(bgImg, 0, 0, VIEW_W, VIEW_H);
             } else {
-                let grad = ctx.createLinearGradient(0, 0, 0, h);
+                let grad = ctx.createLinearGradient(0, 0, 0, VIEW_H);
                 grad.addColorStop(0, '#38bdf8');
                 grad.addColorStop(0.7, '#818cf8');
                 grad.addColorStop(1, '#34d399');
                 ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, w, h);
+                ctx.fillRect(0, 0, VIEW_W, VIEW_H);
             }
 
-            // Logic Processing
             if (currentState === STATES.PLAYING) {
                 bird.velocityY += gravity;
                 bird.y += bird.velocityY;
@@ -647,10 +657,10 @@
                 }
             }
 
-            // Render Obstacles & Bird
             if (currentState === STATES.PLAYING || currentState === STATES.GAMEOVER) {
                 const topImg = assets.topPipes[selectedVersion];
                 const botImg = assets.bottomPipes[selectedVersion];
+                const groundY = VIEW_H - 36;
 
                 pipes.forEach(p => {
                     drawStackedObstacle(topImg, p.x, 0, p.topHeight, true);
@@ -658,10 +668,10 @@
                 });
 
                 ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
-                ctx.fillRect(0, groundY, w, h - groundY);
+                ctx.fillRect(0, groundY, VIEW_W, VIEW_H - groundY);
 
                 drawBird(assets.birds[selectedVersion], bird);
-                drawCleanHUD(w, h);
+                drawCleanHUD();
             }
 
             requestAnimationFrame(gameLoop);
