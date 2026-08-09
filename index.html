@@ -117,6 +117,31 @@
             filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.7));
         }
 
+        /* Persistent High Score Pill Top Right on Selection Screen */
+        .top-right-score-badge {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 8px 18px;
+            border-radius: 9999px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 800;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-right-score-badge span {
+            color: #22c55e;
+            font-size: 1.15rem;
+        }
+
         /* Horizontal Theme Cards */
         .selection-container {
             display: flex;
@@ -248,8 +273,9 @@
             <button class="btn" id="btn-start-proceed">Tap to Play</button>
         </div>
 
-        <!-- Theme Selection Screen -->
+        <!-- Theme Selection Screen with Best Score Top Right -->
         <div id="select-screen" class="overlay hidden">
+            <div class="top-right-score-badge">BEST: <span id="txt-select-best">0</span></div>
             <h1>Select Theme</h1>
             <div class="selection-container">
                 <div class="version-card" onclick="selectVersion(1)">
@@ -307,6 +333,43 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
+
+        // High Score Memory Manager (Dual LocalStorage + Cookie Fallback)
+        function loadSavedHighScore() {
+            try {
+                const ls = localStorage.getItem('lemsbond_high_score');
+                if (ls !== null) return parseInt(ls, 10) || 0;
+            } catch (e) {}
+
+            try {
+                const match = document.cookie.match(/(?:^|; )lemsbond_high_score=([^;]*)/);
+                if (match) return parseInt(match[1], 10) || 0;
+            } catch (e) {}
+
+            return 0;
+        }
+
+        function saveHighScore(val) {
+            try {
+                localStorage.setItem('lemsbond_high_score', val.toString());
+            } catch (e) {}
+
+            try {
+                const d = new Date();
+                d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year cookie
+                document.cookie = `lemsbond_high_score=${val};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+            } catch (e) {}
+        }
+
+        let highScore = loadSavedHighScore();
+
+        function updateHighScoreUI() {
+            const selectBestEl = document.getElementById('txt-select-best');
+            if (selectBestEl) selectBestEl.innerText = highScore;
+        }
+
+        // Initialize display on load
+        updateHighScoreUI();
 
         // Assets Loader
         const assets = {
@@ -372,7 +435,6 @@
         let selectedVersion = 0;
 
         let score = 0;
-        let highScore = parseInt(localStorage.getItem('lemsbond_high_score')) || 0;
 
         // Tuned Physics for Horizontal Layout
         const gravity = 0.26;
@@ -390,6 +452,124 @@
             velocityY: 0,
             rotation: 0
         };
+
+        // Effects Systems (Particles & Dragon Orbit)
+        let particles = [];
+        let orbitAngle = 0;
+
+        function spawnSteamParticle() {
+            const angle = bird.rotation;
+            const offsetX = -bird.width * 0.18;
+            const offsetY = bird.height * 0.35;
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+
+            const px = (bird.x + bird.width / 2) + (offsetX * cos - offsetY * sin);
+            const py = (bird.y + bird.height / 2) + (offsetX * sin + offsetY * cos);
+
+            particles.push({
+                type: 'steam',
+                x: px,
+                y: py,
+                vx: -1.5 - Math.random() * 1.5,
+                vy: 2.8 + Math.random() * 2.2,
+                size: 5 + Math.random() * 4,
+                alpha: 0.95,
+                life: 22,
+                maxLife: 22
+            });
+        }
+
+        function spawnCandyParticle() {
+            const candies = ['🍬', '🍭', '🍫', '🍩', '🧁'];
+            const emoji = candies[Math.floor(Math.random() * candies.length)];
+
+            const angle = bird.rotation;
+            const offsetX = -bird.width * 0.15;
+            const offsetY = bird.height * 0.35;
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+
+            const px = (bird.x + bird.width / 2) + (offsetX * cos - offsetY * sin);
+            const py = (bird.y + bird.height / 2) + (offsetX * sin + offsetY * cos);
+
+            particles.push({
+                type: 'candy',
+                emoji: emoji,
+                x: px,
+                y: py,
+                vx: (Math.random() - 0.5) * 1.6 - 0.8,
+                vy: 2.2 + Math.random() * 2.5,
+                size: 16 + Math.random() * 6,
+                rot: Math.random() * Math.PI * 2,
+                vRot: (Math.random() - 0.5) * 0.18,
+                alpha: 1.0,
+                life: 32,
+                maxLife: 32
+            });
+        }
+
+        function updateAndDrawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                p.alpha = Math.max(0, p.life / p.maxLife);
+
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.save();
+                if (p.type === 'steam') {
+                    p.size += 0.45;
+                    ctx.fillStyle = `rgba(240, 248, 255, ${p.alpha * 0.85})`;
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 8;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (p.type === 'candy') {
+                    p.rot += p.vRot;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot);
+                    ctx.globalAlpha = p.alpha;
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 10;
+                    ctx.font = `${p.size}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(p.emoji, 0, 0);
+                }
+                ctx.restore();
+            }
+        }
+
+        function drawCirclingDragons() {
+            orbitAngle += 0.07;
+            const cx = bird.x + bird.width / 2;
+            const cy = bird.y + bird.height / 2;
+            const rx = 48;
+            const ry = 28;
+
+            for (let i = 0; i < 2; i++) {
+                const angle = orbitAngle + i * Math.PI;
+                const dx = cx + Math.cos(angle) * rx;
+                const dy = cy + Math.sin(angle) * ry;
+
+                ctx.save();
+                ctx.translate(dx, dy);
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 12;
+                ctx.font = '22px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🐉', 0, 0);
+                ctx.restore();
+            }
+        }
 
         function updateBirdBounds() {
             const img = assets.birds[selectedVersion];
@@ -419,6 +599,7 @@
             e.stopPropagation();
             startScreen.classList.add('hidden');
             selectScreen.classList.remove('hidden');
+            updateHighScoreUI();
             currentState = STATES.SELECT;
         });
 
@@ -436,6 +617,7 @@
             bird.velocityY = 0;
             bird.rotation = 0;
             pipes = [];
+            particles = [];
             score = 0;
             pipeSpeed = 2.2;
             pipeGap = 175;
@@ -449,6 +631,7 @@
             } else if (currentState === STATES.GAMEOVER) {
                 gameoverScreen.classList.add('hidden');
                 selectScreen.classList.remove('hidden');
+                updateHighScoreUI();
                 currentState = STATES.SELECT;
             }
         }
@@ -539,6 +722,7 @@
             return false;
         }
 
+        /* Stacked Pipes with Tightened Overlap to remove blank gaps */
         function drawStackedObstacle(img, x, startY, totalHeight, isTopPipe) {
             if (!img.complete || img.naturalWidth === 0) {
                 ctx.fillStyle = '#22c55e';
@@ -550,6 +734,11 @@
             const itemWidth = basePipeWidth;
             const itemHeight = itemWidth * aspect;
 
+            let stepY = itemHeight;
+            if (selectedVersion === 0 || selectedVersion === 1) {
+                stepY = itemHeight * 0.68; // 32% overlap hides blank space completely
+            }
+
             ctx.save();
             ctx.beginPath();
             ctx.rect(x, startY, basePipeWidth, totalHeight);
@@ -559,18 +748,19 @@
                 let currY = startY + totalHeight;
                 while (currY > startY - itemHeight) {
                     ctx.drawImage(img, x, currY - itemHeight, itemWidth, itemHeight + 1);
-                    currY -= itemHeight;
+                    currY -= stepY;
                 }
             } else {
                 let currY = startY;
                 while (currY < startY + totalHeight) {
                     ctx.drawImage(img, x, currY, itemWidth, itemHeight + 1);
-                    currY += itemHeight;
+                    currY += stepY;
                 }
             }
             ctx.restore();
         }
 
+        /* Draw Bird with Neon White Glow Outline Exuding Out */
         function drawBird(img, b) {
             updateBirdBounds();
 
@@ -581,9 +771,20 @@
             ctx.rotate(b.rotation);
 
             if (img.complete && img.naturalWidth > 0) {
+                // Intense Exuding White Neon Edge Aura
+                ctx.save();
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 18;
+                ctx.drawImage(img, -b.width / 2, -b.height / 2, b.width, b.height);
+                ctx.drawImage(img, -b.width / 2, -b.height / 2, b.width, b.height);
+                ctx.restore();
+
+                // Clean Crisp Main Image Layer
                 ctx.drawImage(img, -b.width / 2, -b.height / 2, b.width, b.height);
             } else {
                 ctx.fillStyle = '#f59e0b';
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 15;
                 ctx.beginPath();
                 ctx.arc(0, 0, b.width / 2, 0, Math.PI * 2);
                 ctx.fill();
@@ -647,6 +848,15 @@
                 bird.velocityY += gravity;
                 bird.y += bird.velocityY;
 
+                // Jetpack / Particle Spawning per Bird Version
+                if (selectedVersion === 0) {
+                    spawnSteamParticle(); // Bird 1 Steam Jetpack
+                } else if (selectedVersion === 1) {
+                    if (Math.random() < 0.65) spawnCandyParticle(); // Bird 2 Candy Emojis
+                } else if (selectedVersion === 2) {
+                    spawnSteamParticle(); // Bird 3 Steam Jetpack
+                }
+
                 spawnTimer++;
                 const spawnInterval = Math.max(75, Math.floor(170 / pipeSpeed));
                 if (spawnTimer >= spawnInterval) {
@@ -663,7 +873,8 @@
                         score++;
                         if (score > highScore) {
                             highScore = score;
-                            localStorage.setItem('lemsbond_high_score', highScore);
+                            saveHighScore(highScore);
+                            updateHighScoreUI();
                         }
                     }
 
@@ -690,7 +901,17 @@
                 ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
                 ctx.fillRect(0, groundY, VIEW_W, VIEW_H - groundY);
 
+                // Render Emitters & Particles
+                updateAndDrawParticles();
+
+                // Render Bird and Glow
                 drawBird(assets.birds[selectedVersion], bird);
+
+                // Bird 3 Orbiting Dragons
+                if (selectedVersion === 2) {
+                    drawCirclingDragons();
+                }
+
                 drawCleanHUD();
             }
 
