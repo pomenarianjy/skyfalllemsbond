@@ -46,6 +46,17 @@
             image-rendering: crisp-edges;
         }
 
+        /* Top Overlay Canvas for Front-Layer Flying Bird */
+        #topCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100; /* Flying bird rendered ABOVE all UI cards and overlays */
+        }
+
         /* Overlays Base Style */
         .overlay {
             position: absolute;
@@ -67,7 +78,7 @@
             background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.65)), url('background1.png') center/cover no-repeat;
         }
 
-        /* Translucent Selection Screen to allow underlying Canvas animations */
+        /* Translucent Selection Screen */
         #select-screen {
             background: linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.55));
             backdrop-filter: blur(2px);
@@ -157,7 +168,7 @@
             align-items: center;
             gap: 26px;
             width: 94%;
-            max-width: 860px;
+            max-width: 880px;
             margin: auto 0;
             position: relative;
             z-index: 2;
@@ -189,9 +200,10 @@
             transform: scale(0.96);
         }
 
+        /* Made birds on option cards bigger */
         .version-card img {
-            width: 105px;
-            height: 105px;
+            width: 130px;
+            height: 130px;
             object-fit: contain;
             filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
             transition: transform 0.2s ease;
@@ -210,7 +222,7 @@
 
         .version-title {
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: #0f172a;
             letter-spacing: -0.3px;
         }
@@ -338,12 +350,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- Top Canvas Layer to render front-layer flying bird over all UI elements -->
+        <canvas id="topCanvas"></canvas>
     </div>
 
     <script>
         const container = document.getElementById('game-container');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+
+        const topCanvas = document.getElementById('topCanvas');
+        const topCtx = topCanvas.getContext('2d');
 
         // Horizontal Logical Stage
         const VIEW_W = 800;
@@ -354,6 +372,8 @@
             const dpr = window.devicePixelRatio || 1;
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
+            topCanvas.width = rect.width * dpr;
+            topCanvas.height = rect.height * dpr;
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -557,28 +577,28 @@
         let pipeSpeed = 2.2;
         let pipeGap = 175;
 
+        // Player Bird Physics Object (Made overall bird size bigger)
         const bird = {
             x: 120,
             y: 180,
-            width: 64,
-            height: 64,
+            width: 88,  /* Increased size for bird in gameplay */
+            height: 88,
             velocityY: 0,
             rotation: 0
         };
 
+        // Flying bird1.png on menus and gameover screens (Made noticeably bigger)
         const menuBird = {
-            x: 100,
-            y: 150,
-            width: 88,
-            height: 88,
-            vx: 2.8,
-            vy: 1.2,
-            angle: 0,
-            rotation: 0
+            x: -120,
+            y: 140,
+            vx: 3.2,
+            vy: 1.4,
+            angle: 0
         };
 
         // Particles & Girl Effects State
         let particles = [];
+        let topParticles = [];
         let girlSparkles = [];
         let orbitAngle = 0;
         let girlAnimTime = 0;
@@ -594,18 +614,16 @@
             const px = (b.x + b.width / 2) + (offsetX * cos - offsetY * sin);
             const py = (b.y + b.height / 2) + (offsetX * sin + offsetY * cos);
 
-            const baseVx = customBird ? -customBird.vx * 0.5 : -1.5;
-
             particles.push({
                 type: 'steam',
                 x: px,
                 y: py,
-                vx: baseVx - Math.random() * 1.5,
+                vx: -1.5 - Math.random() * 1.5,
                 vy: 2.8 + Math.random() * 2.2,
-                size: customBird ? 6 + Math.random() * 5 : 5 + Math.random() * 4,
+                size: 6 + Math.random() * 5,
                 alpha: 0.95,
-                life: customBird ? 28 : 22,
-                maxLife: customBird ? 28 : 22
+                life: 22,
+                maxLife: 22
             });
         }
 
@@ -628,7 +646,7 @@
                 y: py,
                 vx: (Math.random() - 0.5) * 1.6 - 0.8,
                 vy: 2.2 + Math.random() * 2.5,
-                size: 16 + Math.random() * 6,
+                size: 18 + Math.random() * 6,
                 rot: Math.random() * Math.PI * 2,
                 vRot: (Math.random() - 0.5) * 0.18,
                 alpha: 1.0,
@@ -679,8 +697,8 @@
             orbitAngle += 0.07;
             const cx = bird.x + bird.width / 2;
             const cy = bird.y + bird.height / 2;
-            const rx = 48;
-            const ry = 28;
+            const rx = 56;
+            const ry = 32;
 
             for (let i = 0; i < 2; i++) {
                 const angle = orbitAngle + i * Math.PI;
@@ -691,7 +709,7 @@
                 ctx.translate(dx, dy);
                 ctx.shadowColor = '#ffffff';
                 ctx.shadowBlur = 12;
-                ctx.font = '22px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+                ctx.font = '24px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('🐉', 0, 0);
@@ -699,10 +717,11 @@
             }
         }
 
+        /* Scaled up gameplay bird dimensions while preserving exact proportions */
         function updateBirdBounds() {
             const img = assets.birds[selectedVersion];
             if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-                const maxDim = 68;
+                const maxDim = 88; /* Bigger gameplay bird size */
                 if (img.naturalWidth >= img.naturalHeight) {
                     bird.width = maxDim;
                     bird.height = maxDim * (img.naturalHeight / img.naturalWidth);
@@ -714,29 +733,35 @@
         }
 
         // --- GIRLS & SPECIAL EFFECTS RENDERING ---
+        /* Girl proportions are strictly preserved using natural aspect ratio, and size is made bigger */
         function drawGirlAndEffects() {
             girlAnimTime += 0.05;
             const currentGirlImg = assets.girls[selectedVersion];
             
-            // Positioning girl at bottom right slightly flying up and down
-            const girlW = 100;
-            const girlH = 135;
-            const baseGirlX = VIEW_W - girlW - 20;
+            // Scaled up height to make girls noticeably bigger while strictly preserving natural aspect ratio
+            const girlTargetH = 210; 
+            let girlW = 150;
+            let girlH = girlTargetH;
+
+            if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalHeight > 0) {
+                girlW = girlTargetH * (currentGirlImg.naturalWidth / currentGirlImg.naturalHeight);
+            }
+
+            const baseGirlX = VIEW_W - girlW - 15;
             const floatOffset = Math.sin(girlAnimTime * 1.5) * 10;
             const girlX = baseGirlX;
-            const girlY = VIEW_H - girlH - 12 + floatOffset;
+            const girlY = VIEW_H - girlH - 10 + floatOffset;
             const girlCenterX = girlX + girlW / 2;
             const girlCenterY = girlY + girlH / 2;
 
             if (selectedVersion === 0) {
                 // --- VERSION 1: Girl 1 + White & Pink Flower Petals Circling Body ---
                 ctx.save();
-                // Draw Petals behind girl body
                 const totalPetals = 8;
                 for (let i = 0; i < totalPetals; i++) {
                     const angle = girlAnimTime * 1.2 + (i * Math.PI * 2 / totalPetals);
-                    const rx = 52;
-                    const ry = 36;
+                    const rx = girlW * 0.55;
+                    const ry = girlH * 0.28;
                     const px = girlCenterX + Math.cos(angle) * rx;
                     const py = girlCenterY + Math.sin(angle) * ry * 0.7;
 
@@ -747,64 +772,60 @@
                     ctx.shadowColor = '#ff69b4';
                     ctx.shadowBlur = 8;
                     ctx.beginPath();
-                    ctx.ellipse(0, 0, 8, 4, 0, 0, Math.PI * 2);
+                    ctx.ellipse(0, 0, 9, 5, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.restore();
                 }
                 ctx.restore();
 
-                // Draw Girl 1 Image
+                // Draw Girl 1 Image in full uncropped proportion
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
 
             } else if (selectedVersion === 1) {
-                // --- VERSION 2: Girl 2 + Pink Sparkles coming from magic wand/hand to the left ---
-                // Draw Girl 2 Image
+                // --- VERSION 2: Girl 2 + Pink Sparkles coming from magic wand ---
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
 
-                // Wand tip location (hand area on left side of girl2)
-                const wandX = girlX + 15;
-                const wandY = girlY + 38;
+                // Wand tip location relative to larger girl scale
+                const wandX = girlX + girlW * 0.15;
+                const wandY = girlY + girlH * 0.28;
 
-                // Magic Light Beams emitting leftward
                 ctx.save();
                 ctx.strokeStyle = 'rgba(255, 182, 193, 0.45)';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2.5;
                 ctx.shadowColor = '#ff1493';
                 ctx.shadowBlur = 10;
                 for (let b = 0; b < 3; b++) {
                     const beamAngle = (Math.PI) + (Math.sin(girlAnimTime * 2 + b) * 0.25);
-                    const length = 60 + Math.sin(girlAnimTime * 3 + b) * 20;
+                    const length = 70 + Math.sin(girlAnimTime * 3 + b) * 25;
                     ctx.beginPath();
                     ctx.moveTo(wandX, wandY);
                     ctx.lineTo(wandX + Math.cos(beamAngle) * length, wandY + Math.sin(beamAngle) * length);
                     ctx.stroke();
                 }
 
-                // Spawn Sparkles
                 if (Math.random() < 0.6) {
                     girlSparkles.push({
                         x: wandX,
                         y: wandY,
-                        vx: -2.0 - Math.random() * 2.2,
-                        vy: (Math.random() - 0.5) * 1.8,
-                        size: 4 + Math.random() * 6,
+                        vx: -2.2 - Math.random() * 2.5,
+                        vy: (Math.random() - 0.5) * 2.0,
+                        size: 4 + Math.random() * 7,
                         alpha: 1.0,
                         color: Math.random() < 0.5 ? '#ff69b4' : '#ffffff',
-                        life: 25
+                        life: 28
                     });
                 }
 
-                // Update & Render Sparkles
                 for (let s = girlSparkles.length - 1; s >= 0; s--) {
                     let sp = girlSparkles[s];
                     sp.x += sp.vx;
                     sp.y += sp.vy;
                     sp.life--;
-                    sp.alpha = Math.max(0, sp.life / 25);
+                    sp.alpha = Math.max(0, sp.life / 28);
 
                     if (sp.life <= 0) {
                         girlSparkles.splice(s, 1);
@@ -823,26 +844,24 @@
 
             } else if (selectedVersion === 2) {
                 // --- VERSION 3: Girl 3 + 3 Red Hearts Circling Above Head ---
-                // Draw Girl 3 Image
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
 
-                // Head area
                 const headX = girlCenterX;
-                const headY = girlY - 10;
+                const headY = girlY - 15;
 
                 ctx.save();
                 ctx.shadowColor = '#ff0000';
-                ctx.shadowBlur = 10;
-                ctx.font = '20px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+                ctx.shadowBlur = 12;
+                ctx.font = '24px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
                 for (let h = 0; h < 3; h++) {
                     const angle = girlAnimTime * 1.5 + (h * Math.PI * 2 / 3);
-                    const hx = headX + Math.cos(angle) * 32;
-                    const hy = headY + Math.sin(angle) * 12;
+                    const hx = headX + Math.cos(angle) * 38;
+                    const hy = headY + Math.sin(angle) * 14;
 
                     ctx.fillText('❤️', hx, hy);
                 }
@@ -966,9 +985,83 @@
             return false;
         }
 
-        // Main Game Loop
-        let lastTime = performance.now();
+        // --- TOP CANVAS FRONT-LAYER FLYING BIRD ANIMATION ---
+        // Flies bird1.png on top of option cards and gameover screen layout
+        function updateAndDrawTopLayer(scale) {
+            topCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
 
+            // Active on SELECT (3 options) screen and GAMEOVER screen (birdgameover.png)
+            if (currentState === STATES.SELECT || currentState === STATES.GAMEOVER || currentState === STATES.START) {
+                topCtx.save();
+                topCtx.scale(scale, scale);
+
+                // Update Menu Bird movement
+                menuBird.x += menuBird.vx;
+                menuBird.y += Math.sin(menuBird.angle) * menuBird.vy;
+                menuBird.angle += 0.04;
+
+                if (menuBird.x > VIEW_W + 150) {
+                    menuBird.x = -160;
+                    menuBird.y = 50 + Math.random() * (VIEW_H - 180);
+                }
+
+                // Spawn steam particles for the top flying bird
+                if (Math.random() < 0.5) {
+                    const mImg = assets.birds[0];
+                    let mbH = 135; /* Bigger flying bird height */
+                    let mbW = (mImg && mImg.complete && mImg.naturalHeight > 0) ? mbH * (mImg.naturalWidth / mImg.naturalHeight) : mbH;
+
+                    topParticles.push({
+                        x: menuBird.x + mbW * 0.15,
+                        y: menuBird.y + mbH * 0.65,
+                        vx: -1.8 - Math.random() * 1.5,
+                        vy: 2.0 + Math.random() * 2.0,
+                        size: 7 + Math.random() * 6,
+                        alpha: 0.9,
+                        life: 25,
+                        maxLife: 25
+                    });
+                }
+
+                // Draw top steam particles
+                for (let i = topParticles.length - 1; i >= 0; i--) {
+                    let tp = topParticles[i];
+                    tp.x += tp.vx;
+                    tp.y += tp.vy;
+                    tp.life--;
+                    tp.alpha = Math.max(0, tp.life / tp.maxLife);
+
+                    if (tp.life <= 0) {
+                        topParticles.splice(i, 1);
+                        continue;
+                    }
+
+                    topCtx.fillStyle = `rgba(240, 248, 255, ${tp.alpha})`;
+                    topCtx.shadowColor = '#ffffff';
+                    topCtx.shadowBlur = 10;
+                    topCtx.beginPath();
+                    topCtx.arc(tp.x, tp.y, tp.size, 0, Math.PI * 2);
+                    topCtx.fill();
+                }
+
+                // Draw Big bird1.png on Front Layer in front of all UI
+                const mImg = assets.birds[0];
+                if (mImg && mImg.complete && mImg.naturalWidth > 0) {
+                    let mbH = 135; /* Made flying bird1.png significantly bigger */
+                    let mbW = mbH * (mImg.naturalWidth / mImg.naturalHeight);
+                    
+                    topCtx.save();
+                    topCtx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+                    topCtx.shadowBlur = 18;
+                    topCtx.drawImage(mImg, menuBird.x, menuBird.y, mbW, mbH);
+                    topCtx.restore();
+                }
+
+                topCtx.restore();
+            }
+        }
+
+        // Main Game Loop
         function gameLoop(now) {
             requestAnimationFrame(gameLoop);
 
@@ -985,26 +1078,7 @@
                 ctx.fillRect(0, 0, VIEW_W, VIEW_H);
             }
 
-            if (currentState === STATES.START || currentState === STATES.SELECT) {
-                // Dynamic Menu Bird Animation
-                menuBird.x += menuBird.vx;
-                menuBird.y += Math.sin(menuBird.angle) * menuBird.vy;
-                menuBird.angle += 0.05;
-
-                if (menuBird.x > VIEW_W + 50) {
-                    menuBird.x = -menuBird.width;
-                    menuBird.y = 80 + Math.random() * 200;
-                }
-
-                if (Math.random() < 0.4) spawnSteamParticle(menuBird);
-                updateAndDrawParticles();
-
-                const mImg = assets.birds[0];
-                if (mImg && mImg.complete) {
-                    ctx.drawImage(mImg, menuBird.x, menuBird.y, menuBird.width, menuBird.height);
-                }
-
-            } else if (currentState === STATES.PLAYING) {
+            if (currentState === STATES.PLAYING) {
                 // Update Bird Physics
                 bird.velocityY += gravity;
                 bird.y += bird.velocityY;
@@ -1104,6 +1178,9 @@
             }
 
             ctx.restore();
+
+            // Render top canvas elements (Flying bird1.png over options and gameover layout)
+            updateAndDrawTopLayer(scale);
         }
 
         requestAnimationFrame(gameLoop);
