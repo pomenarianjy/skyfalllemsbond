@@ -19,23 +19,23 @@
             height: 100%;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #090d16;
+            background: #060911;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Centered game container with fixed 9:16 ratio */
+        /* Horizontal Widescreen Game Viewport (16:9 Ratio) */
         #game-container {
             position: relative;
-            height: 100vh;
-            width: 56.25vh; /* Exactly 9:16 ratio */
-            max-width: 100vw;
-            max-height: 177.78vw; /* Exactly 16:9 inverse */
-            aspect-ratio: 9 / 16;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 Ratio */
+            max-width: 177.78vh; /* 16:9 Aspect Limit */
+            max-height: 100vh;
+            aspect-ratio: 16 / 9;
             overflow: hidden;
             background: #000;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
         }
 
         canvas {
@@ -43,6 +43,7 @@
             width: 100%;
             height: 100%;
             image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
 
         /* Overlays Base Style */
@@ -57,11 +58,11 @@
             justify-content: space-between;
             align-items: center;
             z-index: 10;
-            padding: 24px 16px;
+            padding: 28px 20px;
             text-align: center;
         }
 
-        /* Start and Option Pages Background Fix */
+        /* Start and Theme Selection Background */
         #start-screen, #select-screen {
             background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.65)), url('background1.png') center/cover no-repeat;
         }
@@ -71,11 +72,11 @@
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             color: #ffffff;
             letter-spacing: -0.5px;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-            margin-top: 10px;
+            text-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+            margin-top: 5px;
             font-weight: 800;
         }
 
@@ -83,58 +84,56 @@
             background: linear-gradient(135deg, #ff7e5f, #feb47b);
             border: none;
             color: white;
-            padding: 14px 32px;
-            font-size: 1.1rem;
-            font-weight: 700;
+            padding: 14px 40px;
+            font-size: 1.2rem;
+            font-weight: 800;
             border-radius: 9999px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4);
+            box-shadow: 0 8px 24px rgba(255, 126, 95, 0.45);
             transition: transform 0.15s ease;
-            margin-bottom: 20px;
-            width: 80%;
-            max-width: 280px;
+            margin-bottom: 10px;
         }
 
         .btn:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
-        /* Start Screen Image */
+        /* Start Screen Bird Image */
         .start-img {
-            max-width: 75%;
-            max-height: 45%;
+            max-width: 200px;
+            max-height: 180px;
             width: auto;
             height: auto;
             object-fit: contain;
             margin: auto;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.6));
         }
 
-        /* Selection Container and Compact Proportional Cards */
+        /* Horizontal Theme Cards */
         .selection-container {
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            width: 100%;
+            gap: 20px;
+            width: 90%;
+            max-width: 760px;
             margin: auto 0;
         }
 
         .version-card {
             flex: 1;
-            height: auto; /* Dynamic height based on tight content */
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 16px 8px;
+            border-radius: 18px;
+            padding: 20px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Center components tightly */
-            gap: 10px; /* Small gap between image and text */
+            justify-content: center;
+            gap: 12px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-            transition: transform 0.15s ease;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            transition: transform 0.15s ease, background 0.15s ease;
         }
 
         .version-card:active {
@@ -143,34 +142,32 @@
         }
 
         .version-card img {
-            width: 56px;
-            height: 56px;
+            width: 72px;
+            height: 72px;
             object-fit: contain;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
         }
 
         .card-text-group {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 4px;
             align-items: center;
         }
 
         .version-title {
             font-weight: 800;
-            font-size: 0.88rem;
+            font-size: 1.05rem;
             color: #0f172a;
-            line-height: 1.1;
         }
 
         .version-desc {
-            font-size: 0.68rem;
+            font-size: 0.78rem;
             color: #64748b;
             font-weight: 600;
-            line-height: 1.1;
         }
 
-        /* Fullscreen Game Over Screen */
+        /* Game Over Overlay */
         #gameover-screen {
             padding: 0;
             justify-content: center;
@@ -197,13 +194,13 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            padding-bottom: 50px;
+            padding-bottom: 45px;
             background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%);
         }
 
         .score-box {
             background: rgba(255, 255, 255, 0.95);
-            padding: 18px 36px;
+            padding: 18px 42px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -212,14 +209,14 @@
         }
 
         .score-box h2 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: #0f172a;
             margin-bottom: 2px;
             font-weight: 800;
         }
 
         .score-box p {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #16a34a;
             font-weight: 700;
         }
@@ -230,14 +227,14 @@
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
 
-        <!-- Start Screen Overlay with background1.png -->
+        <!-- Start Screen -->
         <div id="start-screen" class="overlay">
             <h1>Lems Bond Skyfall</h1>
             <img src="birdstart.png" alt="Start Bird" class="start-img" id="img-start-screen" onerror="this.style.display='none'">
             <button class="btn" id="btn-start-proceed">Tap to Play</button>
         </div>
 
-        <!-- Selection Screen Overlay with background1.png -->
+        <!-- Theme Selection Screen -->
         <div id="select-screen" class="overlay hidden">
             <h1>Select Theme</h1>
             <div class="selection-container">
@@ -284,9 +281,9 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Internal Logical Canvas Stage (360 x 640 = 9:16 ratio)
-        const VIEW_W = 360;
-        const VIEW_H = 640;
+        // Horizontal Logical Stage (800 x 450 = 16:9 ratio)
+        const VIEW_W = 800;
+        const VIEW_H = 450;
 
         function resizeCanvas() {
             const rect = container.getBoundingClientRect();
@@ -306,6 +303,7 @@
             birdMasks: [null, null, null]
         };
 
+        // Precise Alpha Masking (Removes invisible PNG border edges)
         function generateAlphaMask(img) {
             const tempCanvas = document.createElement('canvas');
             const w = img.naturalWidth;
@@ -321,7 +319,8 @@
                 const mask = new Uint8Array(w * h);
 
                 for (let i = 0; i < w * h; i++) {
-                    mask[i] = imgData[i * 4 + 3] > 30 ? 1 : 0;
+                    // Strictly discern visible pixels (alpha threshold > 50)
+                    mask[i] = imgData[i * 4 + 3] > 50 ? 1 : 0;
                 }
                 return { mask, width: w, height: h };
             } catch (e) {
@@ -362,27 +361,28 @@
         let score = 0;
         let highScore = parseInt(localStorage.getItem('lemsbond_high_score')) || 0;
 
-        // Physics
-        const gravity = 0.32;
-        const jumpStrength = -6.2;
-        const basePipeWidth = 60;
+        // Tuned Easy Physics for Horizontal Layout
+        const gravity = 0.26;
+        const jumpStrength = -5.6;
+        const basePipeWidth = 72;
 
-        let pipeSpeed = 2.4;
-        let pipeGap = 140;
+        let pipeSpeed = 2.2;
+        let pipeGap = 175; // Generous vertical opening
 
         const bird = {
-            x: 65,
-            y: 260,
-            width: 44,
-            height: 44,
+            x: 120,
+            y: 180,
+            width: 64,
+            height: 64,
             velocityY: 0,
             rotation: 0
         };
 
+        // Enlarge Bird Dimensions significantly
         function updateBirdBounds() {
             const img = assets.birds[selectedVersion];
             if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-                const maxDim = 44;
+                const maxDim = 68; // Larger bird size
                 if (img.naturalWidth >= img.naturalHeight) {
                     bird.width = maxDim;
                     bird.height = maxDim * (img.naturalHeight / img.naturalWidth);
@@ -420,13 +420,13 @@
         }
 
         function resetGame() {
-            bird.y = VIEW_H * 0.4;
+            bird.y = VIEW_H * 0.35;
             bird.velocityY = 0;
             bird.rotation = 0;
             pipes = [];
             score = 0;
-            pipeSpeed = 2.4;
-            pipeGap = 140;
+            pipeSpeed = 2.2;
+            pipeGap = 175;
             spawnTimer = 0;
             updateBirdBounds();
         }
@@ -454,12 +454,12 @@
         gameoverScreen.addEventListener('click', handleInput);
 
         function spawnPipe() {
-            const groundY = VIEW_H - 36;
-            const levelMultiplier = Math.floor(score / 10);
-            pipeSpeed = 2.4 + (levelMultiplier * 0.35);
-            pipeGap = Math.max(110, 140 - (levelMultiplier * 4));
+            const groundY = VIEW_H - 32;
+            const levelMultiplier = Math.floor(score / 8);
+            pipeSpeed = 2.2 + (levelMultiplier * 0.25);
+            pipeGap = Math.max(140, 175 - (levelMultiplier * 3));
 
-            const minHeight = 60;
+            const minHeight = 50;
             const maxHeight = groundY - pipeGap - minHeight;
             const topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
 
@@ -471,31 +471,41 @@
             });
         }
 
+        // Precise Alpha Pixel Collision (Eliminating invisible box hits)
         function checkCollision(b, pipe) {
             updateBirdBounds();
             const maskData = assets.birdMasks[selectedVersion];
-            const groundY = VIEW_H - 36;
+            const groundY = VIEW_H - 32;
 
             const pipeLeft = pipe.x;
             const pipeRight = pipe.x + basePipeWidth;
             const topPipeBottom = pipe.topHeight;
             const bottomPipeTop = pipe.bottomY;
 
+            // Strict visual bounding box check with 2px inset padding
+            const pad = 2;
+            const bLeft = b.x + pad;
+            const bRight = b.x + b.width - pad;
+            const bTop = b.y + pad;
+            const bBottom = b.y + b.height - pad;
+
+            if (bTop <= 0 || bBottom >= groundY) return true;
+
             if (!maskData) {
-                if (b.y <= 0 || (b.y + b.height) >= groundY) return true;
-                if ((b.x + b.width) > pipeLeft && b.x < pipeRight) {
-                    if (b.y < topPipeBottom || (b.y + b.height) > bottomPipeTop) return true;
+                if (bRight > pipeLeft && bLeft < pipeRight) {
+                    if (bTop < topPipeBottom || bBottom > bottomPipeTop) return true;
                 }
                 return false;
             }
 
+            // High-precision pixel sampling
             const { mask, width: imgW, height: imgH } = maskData;
             const cx = b.x + b.width / 2;
             const cy = b.y + b.height / 2;
             const cos = Math.cos(b.rotation);
             const sin = Math.sin(b.rotation);
 
-            const step = Math.max(1, Math.floor(imgW / 24));
+            const step = Math.max(1, Math.floor(imgW / 32));
 
             for (let py = 0; py < imgH; py += step) {
                 for (let px = 0; px < imgW; px += step) {
@@ -520,6 +530,7 @@
             return false;
         }
 
+        // Tight Pipe Image Stacking with zero gaps/seams
         function drawStackedObstacle(img, x, startY, totalHeight, isTopPipe) {
             if (!img.complete || img.naturalWidth === 0) {
                 ctx.fillStyle = '#22c55e';
@@ -530,22 +541,24 @@
             const aspect = img.naturalHeight / img.naturalWidth;
             const itemWidth = basePipeWidth;
             const itemHeight = itemWidth * aspect;
-            const count = Math.max(1, Math.ceil(totalHeight / itemHeight));
 
             ctx.save();
             ctx.beginPath();
             ctx.rect(x, startY, basePipeWidth, totalHeight);
             ctx.clip();
 
+            // Stack images tightly with 1px overlap to prevent subpixel render gaps
             if (isTopPipe) {
-                for (let i = 0; i < count; i++) {
-                    const itemY = (startY + totalHeight) - ((i + 1) * itemHeight);
-                    ctx.drawImage(img, x, itemY, itemWidth, itemHeight);
+                let currY = startY + totalHeight;
+                while (currY > startY - itemHeight) {
+                    ctx.drawImage(img, x, currY - itemHeight, itemWidth, itemHeight + 1);
+                    currY -= itemHeight;
                 }
             } else {
-                for (let i = 0; i < count; i++) {
-                    const itemY = startY + (i * itemHeight);
-                    ctx.drawImage(img, x, itemY, itemWidth, itemHeight);
+                let currY = startY;
+                while (currY < startY + totalHeight) {
+                    ctx.drawImage(img, x, currY, itemWidth, itemHeight + 1);
+                    currY += itemHeight;
                 }
             }
             ctx.restore();
@@ -572,28 +585,28 @@
         }
 
         function drawCleanHUD() {
-            const pillW = 100;
+            const pillW = 110;
             const pillH = 46;
-            const pillX = VIEW_W - pillW - 14;
-            const pillY = 14;
+            const pillX = VIEW_W - pillW - 16;
+            const pillY = 16;
 
             ctx.save();
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
             ctx.beginPath();
             ctx.roundRect(pillX, pillY, pillW, pillH, 12);
             ctx.fill();
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
             ctx.lineWidth = 1;
             ctx.stroke();
 
             ctx.textAlign = 'right';
             ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-            ctx.font = '600 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            ctx.fillText(`BEST ${highScore}`, pillX + pillW - 12, pillY + 16);
+            ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillText(`BEST ${highScore}`, pillX + pillW - 14, pillY + 17);
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = '800 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            ctx.fillText(`${score}`, pillX + pillW - 12, pillY + 36);
+            ctx.font = '800 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillText(`${score}`, pillX + pillW - 14, pillY + 38);
             ctx.restore();
         }
 
@@ -628,7 +641,7 @@
                 bird.y += bird.velocityY;
 
                 spawnTimer++;
-                const spawnInterval = Math.max(60, Math.floor(150 / pipeSpeed));
+                const spawnInterval = Math.max(75, Math.floor(170 / pipeSpeed));
                 if (spawnTimer >= spawnInterval) {
                     spawnPipe();
                     spawnTimer = 0;
@@ -660,14 +673,14 @@
             if (currentState === STATES.PLAYING || currentState === STATES.GAMEOVER) {
                 const topImg = assets.topPipes[selectedVersion];
                 const botImg = assets.bottomPipes[selectedVersion];
-                const groundY = VIEW_H - 36;
+                const groundY = VIEW_H - 32;
 
                 pipes.forEach(p => {
                     drawStackedObstacle(topImg, p.x, 0, p.topHeight, true);
                     drawStackedObstacle(botImg, p.x, p.bottomY, groundY - p.bottomY, false);
                 });
 
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
                 ctx.fillRect(0, groundY, VIEW_W, VIEW_H - groundY);
 
                 drawBird(assets.birds[selectedVersion], bird);
