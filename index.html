@@ -29,8 +29,8 @@
         #game-container {
             position: relative;
             width: 100vw;
-            height: 56.25vw; /* 16:9 Ratio */
-            max-width: 177.78vh; /* 16:9 Aspect Limit */
+            height: 56.25vw;
+            max-width: 177.78vh;
             max-height: 100vh;
             aspect-ratio: 16 / 9;
             overflow: hidden;
@@ -54,7 +54,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 100; /* Flying bird rendered ABOVE all UI cards and overlays */
+            z-index: 100;
         }
 
         /* Overlays Base Style */
@@ -200,7 +200,6 @@
             transform: scale(0.96);
         }
 
-        /* Made birds on option cards bigger */
         .version-card img {
             width: 130px;
             height: 130px;
@@ -351,7 +350,7 @@
             </div>
         </div>
 
-        <!-- Top Canvas Layer to render front-layer flying bird over all UI elements -->
+        <!-- Top Canvas Layer -->
         <canvas id="topCanvas"></canvas>
     </div>
 
@@ -378,10 +377,10 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // --- WEB AUDIO API SYNTHESIZER ---
+        // --- WEB AUDIO API SYNTHESIZER & UNLOCKER ---
         let audioCtx = null;
 
-        function initAudio() {
+        function unlockAudio() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 if (AudioContextClass) {
@@ -393,8 +392,12 @@
             }
         }
 
+        ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+            window.addEventListener(evt, unlockAudio, { once: true });
+        });
+
         function playFlapSound() {
-            initAudio();
+            unlockAudio();
             if (!audioCtx) return;
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
@@ -411,7 +414,7 @@
         }
 
         function playScoreSound() {
-            initAudio();
+            unlockAudio();
             if (!audioCtx) return;
             const now = audioCtx.currentTime;
             const osc1 = audioCtx.createOscillator();
@@ -438,7 +441,7 @@
         }
 
         function playHitSound() {
-            initAudio();
+            unlockAudio();
             if (!audioCtx) return;
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
@@ -455,7 +458,7 @@
         }
 
         function playClickSound() {
-            initAudio();
+            unlockAudio();
             if (!audioCtx) return;
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
@@ -471,7 +474,7 @@
             osc.stop(now + 0.05);
         }
 
-        // High Score Memory Manager
+        // High Score Memory
         function loadSavedHighScore() {
             try {
                 const ls = localStorage.getItem('lemsbond_high_score');
@@ -510,8 +513,42 @@
             bottomPipes: [new Image(), new Image(), new Image()],
             topPipes: [new Image(), new Image(), new Image()],
             birdMasks: [null, null, null],
+            pipeBounds: {
+                top: [null, null, null],
+                bottom: [null, null, null]
+            },
             girls: [new Image(), new Image(), new Image()]
         };
+
+        // Automatic Transparent Margin Detector to bring colored sections together
+        function detectImageBounds(img) {
+            const tempCanvas = document.createElement('canvas');
+            const w = img.naturalWidth;
+            const h = img.naturalHeight;
+            tempCanvas.width = w;
+            tempCanvas.height = h;
+            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+            tempCtx.drawImage(img, 0, 0);
+            try {
+                const data = tempCtx.getImageData(0, 0, w, h).data;
+                let top = h, bottom = 0;
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        if (data[(y * w + x) * 4 + 3] > 30) {
+                            if (y < top) top = y;
+                            if (y > bottom) bottom = y;
+                        }
+                    }
+                }
+                return {
+                    topPaddingRatio: top / h,
+                    bottomPaddingRatio: (h - 1 - bottom) / h,
+                    contentHeightRatio: (bottom - top + 1) / h
+                };
+            } catch (e) {
+                return { topPaddingRatio: 0, bottomPaddingRatio: 0, contentHeightRatio: 1 };
+            }
+        }
 
         function generateAlphaMask(img) {
             const tempCanvas = document.createElement('canvas');
@@ -549,16 +586,21 @@
         assets.backgrounds[1].src = 'background2.png';
         assets.backgrounds[2].src = 'background3.png';
 
+        assets.bottomPipes[0].onload = () => assets.pipeBounds.bottom[0] = detectImageBounds(assets.bottomPipes[0]);
+        assets.topPipes[0].onload = () => assets.pipeBounds.top[0] = detectImageBounds(assets.topPipes[0]);
         assets.bottomPipes[0].src = 'coin.png';
         assets.topPipes[0].src = 'coin.png';
 
+        assets.bottomPipes[1].onload = () => assets.pipeBounds.bottom[1] = detectImageBounds(assets.bottomPipes[1]);
+        assets.topPipes[1].onload = () => assets.pipeBounds.top[1] = detectImageBounds(assets.topPipes[1]);
         assets.bottomPipes[1].src = 'macaron.png';
         assets.topPipes[1].src = 'macaron.png';
 
+        assets.bottomPipes[2].onload = () => assets.pipeBounds.bottom[2] = detectImageBounds(assets.bottomPipes[2]);
+        assets.topPipes[2].onload = () => assets.pipeBounds.top[2] = detectImageBounds(assets.topPipes[2]);
         assets.bottomPipes[2].src = 'dragon.png';
         assets.topPipes[2].src = 'cloud.png';
 
-        // Load 3 Girls
         assets.girls[0].src = 'girl1.png';
         assets.girls[1].src = 'girl2.png';
         assets.girls[2].src = 'girl3.png';
@@ -577,17 +619,17 @@
         let pipeSpeed = 2.2;
         let pipeGap = 175;
 
-        // Player Bird Physics Object (Made overall bird size bigger)
+        // Player Bird Physics Object
         const bird = {
             x: 120,
             y: 180,
-            width: 88,  /* Increased size for bird in gameplay */
+            width: 88,
             height: 88,
             velocityY: 0,
             rotation: 0
         };
 
-        // Flying bird1.png on menus and gameover screens (Made noticeably bigger)
+        // Flying bird1.png on menus
         const menuBird = {
             x: -120,
             y: 140,
@@ -717,11 +759,10 @@
             }
         }
 
-        /* Scaled up gameplay bird dimensions while preserving exact proportions */
         function updateBirdBounds() {
             const img = assets.birds[selectedVersion];
             if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-                const maxDim = 88; /* Bigger gameplay bird size */
+                const maxDim = 88;
                 if (img.naturalWidth >= img.naturalHeight) {
                     bird.width = maxDim;
                     bird.height = maxDim * (img.naturalHeight / img.naturalWidth);
@@ -732,13 +773,11 @@
             }
         }
 
-        // --- GIRLS & SPECIAL EFFECTS RENDERING ---
-        /* Girl proportions are strictly preserved using natural aspect ratio, and size is made bigger */
+        // Girls Rendering Function
         function drawGirlAndEffects() {
             girlAnimTime += 0.05;
             const currentGirlImg = assets.girls[selectedVersion];
             
-            // Scaled up height to make girls noticeably bigger while strictly preserving natural aspect ratio
             const girlTargetH = 210; 
             let girlW = 150;
             let girlH = girlTargetH;
@@ -755,7 +794,6 @@
             const girlCenterY = girlY + girlH / 2;
 
             if (selectedVersion === 0) {
-                // --- VERSION 1: Girl 1 + White & Pink Flower Petals Circling Body ---
                 ctx.save();
                 const totalPetals = 8;
                 for (let i = 0; i < totalPetals; i++) {
@@ -778,18 +816,15 @@
                 }
                 ctx.restore();
 
-                // Draw Girl 1 Image in full uncropped proportion
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
 
             } else if (selectedVersion === 1) {
-                // --- VERSION 2: Girl 2 + Pink Sparkles coming from magic wand ---
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
 
-                // Wand tip location relative to larger girl scale
                 const wandX = girlX + girlW * 0.15;
                 const wandY = girlY + girlH * 0.28;
 
@@ -843,7 +878,6 @@
                 ctx.restore();
 
             } else if (selectedVersion === 2) {
-                // --- VERSION 3: Girl 3 + 3 Red Hearts Circling Above Head ---
                 if (currentGirlImg && currentGirlImg.complete && currentGirlImg.naturalWidth > 0) {
                     ctx.drawImage(currentGirlImg, girlX, girlY, girlW, girlH);
                 }
@@ -866,6 +900,25 @@
                     ctx.fillText('❤️', hx, hy);
                 }
                 ctx.restore();
+            }
+        }
+
+        // Draw Pipes accounting for non-transparent pixel boundaries so colored parts align to gap
+        function drawAlignedPipe(img, boundsInfo, x, targetY, width, totalHeight, isTopPipe) {
+            if (!img || !img.complete || img.naturalWidth === 0) return;
+
+            const b = boundsInfo || { topPaddingRatio: 0, bottomPaddingRatio: 0, contentHeightRatio: 1 };
+            
+            // Adjust draw height so transparent PNG padding overlaps outside gap, locking visible pixels to gap
+            const padOffset = (b.bottomPaddingRatio + b.topPaddingRatio) * totalHeight;
+            const drawH = totalHeight + padOffset;
+
+            if (isTopPipe) {
+                const drawY = targetY - totalHeight + (b.bottomPaddingRatio * drawH);
+                ctx.drawImage(img, x, drawY - padOffset, width, drawH);
+            } else {
+                const drawY = targetY - (b.topPaddingRatio * drawH);
+                ctx.drawImage(img, x, drawY, width, drawH);
             }
         }
 
@@ -985,17 +1038,14 @@
             return false;
         }
 
-        // --- TOP CANVAS FRONT-LAYER FLYING BIRD ANIMATION ---
-        // Flies bird1.png on top of option cards and gameover screen layout
+        // Front Layer Top Canvas Drawing Function
         function updateAndDrawTopLayer(scale) {
             topCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
 
-            // Active on SELECT (3 options) screen and GAMEOVER screen (birdgameover.png)
             if (currentState === STATES.SELECT || currentState === STATES.GAMEOVER || currentState === STATES.START) {
                 topCtx.save();
                 topCtx.scale(scale, scale);
 
-                // Update Menu Bird movement
                 menuBird.x += menuBird.vx;
                 menuBird.y += Math.sin(menuBird.angle) * menuBird.vy;
                 menuBird.angle += 0.04;
@@ -1005,10 +1055,9 @@
                     menuBird.y = 50 + Math.random() * (VIEW_H - 180);
                 }
 
-                // Spawn steam particles for the top flying bird
                 if (Math.random() < 0.5) {
                     const mImg = assets.birds[0];
-                    let mbH = 135; /* Bigger flying bird height */
+                    let mbH = 135;
                     let mbW = (mImg && mImg.complete && mImg.naturalHeight > 0) ? mbH * (mImg.naturalWidth / mImg.naturalHeight) : mbH;
 
                     topParticles.push({
@@ -1023,7 +1072,6 @@
                     });
                 }
 
-                // Draw top steam particles
                 for (let i = topParticles.length - 1; i >= 0; i--) {
                     let tp = topParticles[i];
                     tp.x += tp.vx;
@@ -1044,10 +1092,9 @@
                     topCtx.fill();
                 }
 
-                // Draw Big bird1.png on Front Layer in front of all UI
                 const mImg = assets.birds[0];
                 if (mImg && mImg.complete && mImg.naturalWidth > 0) {
-                    let mbH = 135; /* Made flying bird1.png significantly bigger */
+                    let mbH = 135;
                     let mbW = mbH * (mImg.naturalWidth / mImg.naturalHeight);
                     
                     topCtx.save();
@@ -1079,7 +1126,6 @@
             }
 
             if (currentState === STATES.PLAYING) {
-                // Update Bird Physics
                 bird.velocityY += gravity;
                 bird.y += bird.velocityY;
 
@@ -1101,22 +1147,20 @@
                     document.getElementById('gameover-screen').classList.remove('hidden');
                 }
 
-                // Update & Render Pipes
+                // Update & Render Pipes (Aligned using non-transparent pixel edges)
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     let p = pipes[i];
                     p.x -= pipeSpeed;
 
-                    // Draw Top Pipe
+                    // Draw Top Pipe aligned to visible pixel content
                     const topImg = assets.topPipes[selectedVersion];
-                    if (topImg && topImg.complete) {
-                        ctx.drawImage(topImg, p.x, 0, basePipeWidth, p.topHeight);
-                    }
+                    const topBounds = assets.pipeBounds.top[selectedVersion];
+                    drawAlignedPipe(topImg, topBounds, p.x, p.topHeight, basePipeWidth, p.topHeight, true);
 
-                    // Draw Bottom Pipe
+                    // Draw Bottom Pipe aligned to visible pixel content
                     const bottomImg = assets.bottomPipes[selectedVersion];
-                    if (bottomImg && bottomImg.complete) {
-                        ctx.drawImage(bottomImg, p.x, p.bottomY, basePipeWidth, VIEW_H - p.bottomY);
-                    }
+                    const bottomBounds = assets.pipeBounds.bottom[selectedVersion];
+                    drawAlignedPipe(bottomImg, bottomBounds, p.x, p.bottomY, basePipeWidth, VIEW_H - p.bottomY, false);
 
                     // Collision Check
                     if (checkCollision(p)) {
@@ -1149,7 +1193,7 @@
                     spawnPipes();
                 }
 
-                // Draw Bird
+                // Draw Player Bird
                 ctx.save();
                 ctx.translate(bird.x + bird.width / 2, bird.y + bird.height / 2);
                 ctx.rotate(bird.rotation);
@@ -1179,7 +1223,6 @@
 
             ctx.restore();
 
-            // Render top canvas elements (Flying bird1.png over options and gameover layout)
             updateAndDrawTopLayer(scale);
         }
 
